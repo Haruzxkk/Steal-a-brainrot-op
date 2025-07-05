@@ -10,7 +10,7 @@ until LocalPlayer
 
 local targetPets = getgenv().TargetPetNames or {}
 
-print("🔧 DreamHub initialized with", #targetPets, "target pets")
+print("🔧 DreamHub By Haruzx initialized with", #targetPets, "target pets")
 
 local visitedJobIds = {[game.JobId] = true}
 local hops = 0
@@ -175,7 +175,7 @@ end)
 
 pcall(function()
     task.wait(3)
-    print("🔍 Starting pet detection...")
+    print("🔍 Starting pet detection... By Haruzx")
     local petsFound = checkForPets()
     if #petsFound > 0 then
         for _, name in ipairs(petsFound) do
