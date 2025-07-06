@@ -25,7 +25,7 @@ function serverHop(force)
 
     local PlaceId, JobId = game.PlaceId, game.JobId
     local foundServer = false
-    local maxAttempts = 10 
+    local maxAttempts = 15
     local attempt = 0
 
     while not foundServer and attempt < maxAttempts do
@@ -49,6 +49,7 @@ function serverHop(force)
                     if tonumber(server.playing) < tonumber(server.maxPlayers)
                         and server.id ~= JobId
                         and not visitedJobIds[server.id] then
+
                         visitedJobIds[server.id] = true
                         hops += 1
                         if hops >= 50 then
@@ -56,9 +57,22 @@ function serverHop(force)
                             hops = 0
                         end
 
-                        TeleportService:TeleportToPlaceInstance(PlaceId, server.id)
-                        foundServer = true
-                        return
+                        local successTeleport, err = pcall(function()
+                            TeleportService:TeleportToPlaceInstance(PlaceId, server.id, Players.LocalPlayer)
+                        end)
+
+                        if successTeleport then
+                            foundServer = true
+                            return
+                        else
+                            warn("❌ Falha ao teleportar para servidor " .. server.id .. ": " .. tostring(err))
+                            if tostring(err):find("full") or tostring(err):find("GameFull") then
+                                -- tenta próximo servidor
+                                continue
+                            else
+                                task.wait(0.5)
+                            end
+                        end
                     end
                 end
 
@@ -70,10 +84,8 @@ function serverHop(force)
         end
     end
 
-    if not foundServer then
-        warn("❌ Não foi possível encontrar outro servidor. Recarregando lugar atual.")
-        TeleportService:Teleport(PlaceId)
-    end
+    warn("⚠️ Nenhum servidor válido encontrado. Recarregando...")
+    TeleportService:Teleport(PlaceId)
 end
 
 local function removeESP(player)
