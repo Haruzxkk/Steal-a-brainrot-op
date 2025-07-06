@@ -202,49 +202,100 @@ local function createGUI()
     gui.IgnoreGuiInset = true
     gui.Parent = getSafeGuiParent()
 
-    local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 200, 0, 140)
-    frame.Position = UDim2.new(0, 40, 0.4, 0)
-    frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    local toggleBtn = Instance.new("TextButton")
+    toggleBtn.Size = UDim2.new(0, 36, 0, 36)
+    toggleBtn.Position = UDim2.new(0, 10, 0, 10)
+    toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    toggleBtn.TextColor3 = Color3.new(1, 1, 1)
+    toggleBtn.Text = "☰"
+    toggleBtn.Font = Enum.Font.GothamBold
+    toggleBtn.TextSize = 20
+    toggleBtn.ZIndex = 10
+    toggleBtn.Parent = gui
+
+    local frame = Instance.new("ScrollingFrame")
+    frame.Size = UDim2.new(0, 220, 0, 200)
+    frame.Position = UDim2.new(0, 50, 0.4, 0)
+    frame.CanvasSize = UDim2.new(0, 0, 0, 300)
+    frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     frame.BorderSizePixel = 0
-    frame.Draggable = true
     frame.Active = true
+    frame.Draggable = true
+    frame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    frame.ScrollingDirection = Enum.ScrollingDirection.Y
+    frame.Visible = true
     frame.Parent = gui
 
+    toggleBtn.MouseButton1Click:Connect(function()
+        frame.Visible = not frame.Visible
+    end)
+
+    local layout = Instance.new("UIListLayout")
+    layout.Padding = UDim.new(0, 8)
+    layout.SortOrder = Enum.SortOrder.LayoutOrder
+    layout.Parent = frame
+
     local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, 0, 0, 30)
+    title.Size = UDim2.new(1, 0, 0, 40)
     title.BackgroundTransparency = 1
     title.Text = "🌙 DreamHub"
     title.Font = Enum.Font.GothamBold
-    title.TextSize = 18
+    title.TextSize = 22
     title.TextColor3 = Color3.fromRGB(255, 255, 255)
     title.Parent = frame
 
-    local serverHopBtn = Instance.new("TextButton")
-    serverHopBtn.Size = UDim2.new(0.9, 0, 0, 35)
-    serverHopBtn.Position = UDim2.new(0.05, 0, 0, 40)
-    serverHopBtn.Text = "ServerHop"
-    serverHopBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    serverHopBtn.TextColor3 = Color3.new(1, 1, 1)
-    serverHopBtn.Font = Enum.Font.SourceSansBold
-    serverHopBtn.TextSize = 18
-    serverHopBtn.Parent = frame
-    serverHopBtn.MouseButton1Click:Connect(function()
+    local function createButton(text, callback)
+        local btn = Instance.new("TextButton")
+        btn.Size = UDim2.new(0.9, 0, 0, 35)
+        btn.Position = UDim2.new(0.05, 0, 0, 0)
+        btn.Text = text
+        btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        btn.BorderSizePixel = 0
+        btn.TextColor3 = Color3.fromRGB(240, 240, 240)
+        btn.Font = Enum.Font.GothamSemibold
+        btn.TextSize = 16
+        btn.Parent = frame
+
+        btn.MouseEnter:Connect(function()
+            btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        end)
+        btn.MouseLeave:Connect(function()
+            btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        end)
+        btn.MouseButton1Click:Connect(callback)
+    end
+
+    createButton("ServerHop", function()
         serverHop(true)
     end)
 
-    local espBtn = Instance.new("TextButton")
-    espBtn.Size = UDim2.new(0.9, 0, 0, 35)
-    espBtn.Position = UDim2.new(0.05, 0, 0, 85)
-    espBtn.Text = "ESP Jogadores"
-    espBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    espBtn.TextColor3 = Color3.new(1, 1, 1)
-    espBtn.Font = Enum.Font.SourceSansBold
-    espBtn.TextSize = 18
-    espBtn.Parent = frame
-    espBtn.MouseButton1Click:Connect(function()
+    createButton("ESP Jogadores", function()
         enableESP()
     end)
+
+    createButton("🛡️ Anti-Ragdoll", function()
+    local function protect()
+        local lp = game:GetService("Players").LocalPlayer
+        local char = lp.Character or lp.CharacterAdded:Wait()
+        local hum = char:WaitForChild("Humanoid")
+
+        hum.StateChanged:Connect(function(_, new)
+            if new == Enum.HumanoidStateType.Physics
+            or new == Enum.HumanoidStateType.Ragdoll
+            or new == Enum.HumanoidStateType.FallingDown
+            or new == Enum.HumanoidStateType.PlatformStanding then
+                hum:ChangeState(Enum.HumanoidStateType.GettingUp)
+                -- print removido conforme solicitado
+            end
+        end)
+    end
+
+    task.spawn(protect)
+    game:GetService("Players").LocalPlayer.CharacterAdded:Connect(function()
+        task.wait(1)
+        protect()
+    end)
+end)
 
     serverHopButtonGui = gui
 end
