@@ -94,8 +94,8 @@ local function setupPlayerRemoval()
 end
 
 function enableESP()
-    for _, v in pairs(highlights) do if v and v.Destroy then v:Destroy() end end
-    for _, v in pairs(texts) do if v and v.Remove then v:Remove() end end
+    for _, v in pairs(highlights) do if v then v:Destroy() end end
+    for _, v in pairs(texts) do if v then v:Remove() end end
     highlights, texts = {}, {}
 
     setupPlayerRemoval()
@@ -103,14 +103,15 @@ function enableESP()
     RunService:UnbindFromRenderStep("ESP")
     RunService:BindToRenderStep("ESP", Enum.RenderPriority.Camera.Value + 1, function()
         for _, player in ipairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                local hrp = player.Character.HumanoidRootPart
-                local pos, onScreen = Camera:WorldToViewportPoint(hrp.Position)
+            if player ~= LocalPlayer and player.Character then
+                local char = player.Character
+                local head = char:FindFirstChild("Head")
+                if head then
+                    local pos, onScreen = Camera:WorldToViewportPoint(head.Position + Vector3.new(0, 1.5, 0)) -- mais acima da cabeça
 
-                if onScreen then
                     if not highlights[player] then
                         local hl = Instance.new("Highlight")
-                        hl.Adornee = player.Character
+                        hl.Adornee = char
                         hl.FillColor = Color3.fromRGB(255, 0, 0)
                         hl.FillTransparency = 0.5
                         hl.OutlineColor = Color3.fromRGB(255, 255, 255)
@@ -123,13 +124,13 @@ function enableESP()
                     texts[player] = texts[player] or Drawing.new("Text")
                     local label = texts[player]
                     label.Text = player.Name
-                    label.Size = 18
+                    label.Size = 20
                     label.Center = true
                     label.Outline = true
                     label.Color = Color3.fromRGB(255, 255, 255)
                     label.Transparency = 1
-                    label.Position = Vector2.new(pos.X, pos.Y - 35)
-                    label.Visible = true
+                    label.Position = Vector2.new(pos.X, pos.Y)
+                    label.Visible = onScreen
                 else
                     if texts[player] then texts[player].Visible = false end
                 end
