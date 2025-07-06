@@ -57,25 +57,20 @@ function serverHop(force)
                             hops = 0
                         end
 
-                        local successTeleport, err = pcall(function()
+                        local tpSuccess, tpErr = pcall(function()
                             TeleportService:TeleportToPlaceInstance(PlaceId, server.id, Players.LocalPlayer)
                         end)
 
-                        if successTeleport then
+                        if tpSuccess then
                             foundServer = true
-                            return
+                            break
                         else
-                            warn("❌ Falha ao teleportar para servidor " .. server.id .. ": " .. tostring(err))
-                            if tostring(err):find("full") or tostring(err):find("GameFull") then
-                                -- tenta próximo servidor
-                                continue
-                            else
-                                task.wait(0.5)
-                            end
+                            warn("⚠️ Teleporte falhou para o servidor " .. server.id .. ": " .. tostring(tpErr))
                         end
                     end
                 end
 
+                if foundServer then break end
                 cursor = response.nextPageCursor
                 if not cursor then break end
             else
@@ -84,8 +79,10 @@ function serverHop(force)
         end
     end
 
-    warn("⚠️ Nenhum servidor válido encontrado. Recarregando...")
-    TeleportService:Teleport(PlaceId)
+    if not foundServer then
+        warn("❌ Não foi possível encontrar ou entrar em um servidor válido. Recarregando lugar atual.")
+        TeleportService:Teleport(PlaceId)
+    end
 end
 
 local function removeESP(player)
