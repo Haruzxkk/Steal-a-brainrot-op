@@ -25,9 +25,11 @@ local function createServerHopButton()
     if serverHopButton then return end
 
     local gui = Instance.new("ScreenGui")
-    gui.Name = "DremaHubGUI"
+    gui.Name = "NotifyBotGUI"
     gui.ResetOnSpawn = false
-    gui.Parent = CoreGui
+    gui.IgnoreGuiInset = true
+    gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    gui.Parent = (gethui and gethui()) or (syn and syn.protect_gui and syn.protect_gui(CoreGui)) or CoreGui
 
     local button = Instance.new("TextButton")
     button.Name = "ServerHopButton"
