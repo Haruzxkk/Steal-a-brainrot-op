@@ -14,7 +14,6 @@ local detectedPets = {}
 local teleportFails = 0
 local maxTeleportRetries = 3
 local serverHopButtonGui = nil
-local lines = {}
 
 local function getSafeGuiParent()
     return (gethui and gethui()) or (syn and syn.protect_gui and syn.protect_gui(CoreGui)) or CoreGui
@@ -77,29 +76,36 @@ function serverHop(force)
 end
 
 local function enableESP()
-    for _, line in pairs(lines) do if line then line:Remove() end end
+    for _, line in pairs(lines) do
+        if typeof(line) == "table" and line.Remove then
+            line:Remove()
+        end
+    end
     lines = {}
 
+    RunService:UnbindFromRenderStep("ESP")  
     RunService:BindToRenderStep("ESP", Enum.RenderPriority.Camera.Value + 1, function()
-        for _, player in pairs(Players:GetPlayers()) do
+        for _, player in ipairs(Players:GetPlayers()) do
             if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
                 local hrp = player.Character.HumanoidRootPart
-                local screenPos, onScreen = workspace.CurrentCamera:WorldToViewportPoint(hrp.Position)
+                local pos, visible = workspace.CurrentCamera:WorldToViewportPoint(hrp.Position)
 
-                if onScreen then
+                if visible then
                     if not lines[player] then
-                        local drawing = Drawing.new("Line")
-                        drawing.Thickness = 2
-                        drawing.Color = Color3.fromRGB(255, 0, 0)
-                        drawing.Transparency = 1
-                        lines[player] = drawing
+                        local line = Drawing.new("Line")
+                        line.Thickness = 2
+                        line.Transparency = 1
+                        line.Color = Color3.fromRGB(255, 0, 0)
+                        lines[player] = line
                     end
 
                     local line = lines[player]
                     line.Visible = true
-                    line.From = Vector2.new(screenPos.X, 0)
-                    line.To = Vector2.new(screenPos.X, screenPos.Y)
+                    line.From = Vector2.new(pos.X, 2)  -- ← Do topo da tela (fixo Y=2)
+                    line.To = Vector2.new(pos.X, pos.Y)
                 end
+            elseif lines[player] then
+                lines[player].Visible = false
             end
         end
     end)
