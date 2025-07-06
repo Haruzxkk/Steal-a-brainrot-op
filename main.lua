@@ -25,7 +25,7 @@ local function createServerHopButton()
     if serverHopButton then return end
 
     local gui = Instance.new("ScreenGui")
-    gui.Name = "NotifyBotGUI"
+    gui.Name = "DreamHub"
     gui.ResetOnSpawn = false
     gui.IgnoreGuiInset = true
     gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
