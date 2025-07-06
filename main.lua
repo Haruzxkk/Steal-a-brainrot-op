@@ -14,19 +14,35 @@ local stopHopping = false
 local detectedPets = {}
 local serverHopButtonGui = nil
 local highlights = {}
+local teleportFails = 0
+local maxTeleportRetries = 3
 local texts = {}
 
 local function getSafeGuiParent()
     return (gethui and gethui()) or (syn and syn.protect_gui and syn.protect_gui(CoreGui)) or CoreGui
 end
 
+TeleportService.TeleportInitFailed:Connect(function(_, result)
+    teleportFails += 1
+    warn("⚠️ Teleporte falhou:", result)
+
+    if teleportFails >= maxTeleportRetries then
+        warn("⛔ Muitas falhas de teleporte. Recarregando jogo...")
+        teleportFails = 0
+        task.wait(1)
+        TeleportService:Teleport(game.PlaceId)
+    else
+        task.wait(0.5)
+        serverHop(true)
+    end
+end)
+
 function serverHop(force)
     if stopHopping and not force then return end
 
     local PlaceId, JobId = game.PlaceId, game.JobId
-    local foundServer = false
+    local attempt, foundServer = 0, false
     local maxAttempts = 15
-    local attempt = 0
 
     while not foundServer and attempt < maxAttempts do
         attempt += 1
@@ -40,13 +56,13 @@ function serverHop(force)
             local url = "https://games.roblox.com/v1/games/" .. PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
             if cursor then url ..= "&cursor=" .. cursor end
 
-            local success, response = pcall(function()
+            local httpSuccess, response = pcall(function()
                 return HttpService:JSONDecode(game:HttpGet(url))
             end)
 
-            if success and response and response.data then
+            if httpSuccess and response and response.data then
                 for _, server in ipairs(response.data) do
-                    if tonumber(server.playing) < tonumber(server.maxPlayers)
+                    if tonumber(server.playing or 0) < tonumber(server.maxPlayers or 1)
                         and server.id ~= JobId
                         and not visitedJobIds[server.id] then
 
@@ -57,32 +73,22 @@ function serverHop(force)
                             hops = 0
                         end
 
-                        local tpSuccess, tpErr = pcall(function()
-                            TeleportService:TeleportToPlaceInstance(PlaceId, server.id, Players.LocalPlayer)
-                        end)
-
-                        if tpSuccess then
-                            foundServer = true
-                            break
-                        else
-                            warn("⚠️ Teleporte falhou para o servidor " .. server.id .. ": " .. tostring(tpErr))
-                        end
+                        warn("🌐 Tentando servidor:", server.id)
+                        TeleportService:TeleportToPlaceInstance(PlaceId, server.id)
+                        return
                     end
                 end
-
-                if foundServer then break end
                 cursor = response.nextPageCursor
                 if not cursor then break end
             else
+                warn("⚠️ Erro na requisição da lista de servidores. Tentando novamente...")
                 task.wait(0.2)
             end
         end
     end
 
-    if not foundServer then
-        warn("❌ Não foi possível encontrar ou entrar em um servidor válido. Recarregando lugar atual.")
-        TeleportService:Teleport(PlaceId)
-    end
+    warn("❌ Nenhum servidor válido encontrado. Recarregando...")
+    TeleportService:Teleport(PlaceId)
 end
 
 local function removeESP(player)
