@@ -15,7 +15,7 @@ local detectedPets = {}
 local teleportFails = 0
 local maxTeleportRetries = 3
 local serverHopButtonGui = nil
-local lines = {}
+local highlights = {}
 local texts = {}
 
 local function getSafeGuiParent()
@@ -79,9 +79,9 @@ function serverHop(force)
 end
 
 local function removeESP(player)
-    if lines[player] then
-        lines[player]:Remove()
-        lines[player] = nil
+    if highlights[player] then
+        highlights[player]:Destroy()
+        highlights[player] = nil
     end
     if texts[player] then
         texts[player]:Remove()
@@ -90,23 +90,15 @@ local function removeESP(player)
 end
 
 local function setupPlayerRemoval()
-    Players.PlayerRemoving:Connect(function(player)
-        removeESP(player)
-    end)
-end
-
-local function setupNewPlayers()
-    Players.PlayerAdded:Connect(function(player)
-    end)
+    Players.PlayerRemoving:Connect(removeESP)
 end
 
 function enableESP()
-    for _, obj in pairs(lines) do if obj.Remove then obj:Remove() end end
-    for _, obj in pairs(texts) do if obj.Remove then obj:Remove() end end
-    lines, texts = {}, {}
+    for _, v in pairs(highlights) do if v and v.Destroy then v:Destroy() end end
+    for _, v in pairs(texts) do if v and v.Remove then v:Remove() end end
+    highlights, texts = {}, {}
 
     setupPlayerRemoval()
-    setupNewPlayers()
 
     RunService:UnbindFromRenderStep("ESP")
     RunService:BindToRenderStep("ESP", Enum.RenderPriority.Camera.Value + 1, function()
@@ -116,32 +108,33 @@ function enableESP()
                 local pos, onScreen = Camera:WorldToViewportPoint(hrp.Position)
 
                 if onScreen then
-                    lines[player] = lines[player] or Drawing.new("Line")
-                    local line = lines[player]
-                    line.Thickness = 2
-                    line.Transparency = 1
-                    line.Color = Color3.fromRGB(255, 0, 0)
-                    line.From = Vector2.new(pos.X, 0)
-                    line.To = Vector2.new(pos.X, pos.Y)
-                    line.Visible = true
+                    if not highlights[player] then
+                        local hl = Instance.new("Highlight")
+                        hl.Adornee = player.Character
+                        hl.FillColor = Color3.fromRGB(255, 0, 0)
+                        hl.FillTransparency = 0.5
+                        hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+                        hl.OutlineTransparency = 0
+                        hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                        hl.Parent = game:GetService("CoreGui")
+                        highlights[player] = hl
+                    end
 
                     texts[player] = texts[player] or Drawing.new("Text")
                     local label = texts[player]
-                    label.Size = 14
+                    label.Text = player.Name
+                    label.Size = 18
                     label.Center = true
                     label.Outline = true
                     label.Color = Color3.fromRGB(255, 255, 255)
                     label.Transparency = 1
-                    label.Text = player.Name
-                    label.Position = Vector2.new(pos.X, pos.Y + 5)
+                    label.Position = Vector2.new(pos.X, pos.Y - 35)
                     label.Visible = true
                 else
-                    if lines[player] then lines[player].Visible = false end
                     if texts[player] then texts[player].Visible = false end
                 end
             else
-                if lines[player] then lines[player].Visible = false end
-                if texts[player] then texts[player].Visible = false end
+                removeESP(player)
             end
         end
     end)
