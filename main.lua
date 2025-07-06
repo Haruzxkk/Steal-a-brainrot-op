@@ -202,22 +202,21 @@ local function createGUI()
     gui.IgnoreGuiInset = true
     gui.Parent = getSafeGuiParent()
 
-    local toggleBtn = Instance.new("TextButton")
-    toggleBtn.Size = UDim2.new(0, 36, 0, 36)
-    toggleBtn.Position = UDim2.new(0.5, -18, 0, 10)
-    toggleBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    toggleBtn.TextColor3 = Color3.new(1, 1, 1)
-    toggleBtn.Text = "⭘"
-    toggleBtn.Font = Enum.Font.GothamBold
-    toggleBtn.TextSize = 20
+    local toggleBtn = Instance.new("ImageButton")
+    toggleBtn.Size = UDim2.new(0, 40, 0, 40)
+    toggleBtn.Position = UDim2.new(0, 10, 0, 10)
+    toggleBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    toggleBtn.BorderSizePixel = 0
+    toggleBtn.Image = "🌟"
+    toggleBtn.ScaleType = Enum.ScaleType.Fit
     toggleBtn.ZIndex = 10
     toggleBtn.AutoButtonColor = true
     toggleBtn.Parent = gui
 
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 230, 0, 220)
-    frame.Position = UDim2.new(0, 50, 0.4, 0)
-    frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    frame.Size = UDim2.new(0, 240, 0, 260)
+    frame.Position = UDim2.new(0.5, -120, 0.4, 0)
+    frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     frame.BorderSizePixel = 0
     frame.Active = true
     frame.Draggable = true
@@ -236,7 +235,7 @@ local function createGUI()
     local title = Instance.new("TextLabel")
     title.Size = UDim2.new(1, 0, 0, 40)
     title.BackgroundTransparency = 1
-    title.Text = "✨ DreamHub"
+    title.Text = "🌟 DreamHub"
     title.Font = Enum.Font.GothamBold
     title.TextSize = 22
     title.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -244,14 +243,14 @@ local function createGUI()
 
     local function createButton(label, onClick)
         local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(0.9, 0, 0, 36)
+        btn.Size = UDim2.new(0.9, 0, 0, 38)
         btn.Position = UDim2.new(0.05, 0, 0, 0)
         btn.Text = label
-        btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
         btn.BorderSizePixel = 0
         btn.TextColor3 = Color3.fromRGB(240, 240, 240)
-        btn.Font = Enum.Font.GothamSemibold
-        btn.TextSize = 16
+        btn.Font = Enum.Font.GothamMedium
+        btn.TextSize = 17
         btn.AutoButtonColor = true
         btn.Parent = frame
 
@@ -259,7 +258,7 @@ local function createGUI()
             btn.BackgroundColor3 = Color3.fromRGB(65, 65, 65)
         end)
         btn.MouseLeave:Connect(function()
-            btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+            btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
         end)
         btn.MouseButton1Click:Connect(onClick)
     end
@@ -273,52 +272,49 @@ local function createGUI()
     end)
 
     createButton("🛡️ Anti-Ragdoll", function()
-    local lp = game:GetService("Players").LocalPlayer
-
-    local function protectCharacter(char)
-        local hum = char:WaitForChild("Humanoid", 5)
-        if not hum then return end
-
-        -- Remove constraints que causam ragdoll
-        for _, obj in ipairs(char:GetDescendants()) do
-            if obj:IsA("BallSocketConstraint") or obj:IsA("HingeConstraint") or obj:IsA("NoCollisionConstraint") then
-                obj:Destroy()
-            end
-        end
-
-        hum.StateChanged:Connect(function(_, state)
-            if state == Enum.HumanoidStateType.Physics
-            or state == Enum.HumanoidStateType.FallingDown
-            or state == Enum.HumanoidStateType.PlatformStanding
-            or state == Enum.HumanoidStateType.Ragdoll then
-                hum:ChangeState(Enum.HumanoidStateType.GettingUp)
-            end
-        end)
-
-        task.spawn(function()
-            while hum and hum.Parent do
-                if hum.PlatformStand then
-                    hum.PlatformStand = false
-                    hum:ChangeState(Enum.HumanoidStateType.Running)
+        local lp = game:GetService("Players").LocalPlayer
+        local function protectCharacter(char)
+            local hum = char:WaitForChild("Humanoid", 5)
+            if not hum then return end
+            for _, obj in ipairs(char:GetDescendants()) do
+                if obj:IsA("BallSocketConstraint") or obj:IsA("HingeConstraint") or obj:IsA("NoCollisionConstraint") then
+                    obj:Destroy()
                 end
-
-                if hum.HipHeight < 1 then hum.HipHeight = 2 end
-                if hum.WalkSpeed < 8 then hum.WalkSpeed = 16 end
-
-                task.wait(0.25)
             end
+            local states = {
+                Enum.HumanoidStateType.Ragdoll,
+                Enum.HumanoidStateType.FallingDown,
+                Enum.HumanoidStateType.Physics,
+                Enum.HumanoidStateType.PlatformStanding
+            }
+            for _, s in ipairs(states) do
+                pcall(function() hum:SetStateEnabled(s, false) end)
+            end
+            hum.StateChanged:Connect(function(_, state)
+                if table.find(states, state) then
+                    hum:ChangeState(Enum.HumanoidStateType.GettingUp)
+                end
+            end)
+            task.spawn(function()
+                while hum and hum.Parent do
+                    if hum.PlatformStand then
+                        hum.PlatformStand = false
+                        hum:ChangeState(Enum.HumanoidStateType.Running)
+                    end
+                    if hum.HipHeight < 1 then hum.HipHeight = 2 end
+                    if hum.WalkSpeed < 8 then hum.WalkSpeed = 16 end
+                    task.wait(0.25)
+                end
+            end)
+        end
+        if lp.Character then
+            protectCharacter(lp.Character)
+        end
+        lp.CharacterAdded:Connect(function(char)
+            task.wait(0.3)
+            protectCharacter(char)
         end)
-    end
-
-    if lp.Character then
-        protectCharacter(lp.Character)
-    end
-
-    lp.CharacterAdded:Connect(function(char)
-        task.wait(0.3)
-        protectCharacter(char)
     end)
-end)
 
     serverHopButtonGui = gui
 end
