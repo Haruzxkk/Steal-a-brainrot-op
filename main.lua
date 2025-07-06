@@ -12,8 +12,6 @@ local hops = 0
 local visitedJobIds = {[game.JobId] = true}
 local stopHopping = false
 local detectedPets = {}
-local teleportFails = 0
-local maxTeleportRetries = 3
 local serverHopButtonGui = nil
 local highlights = {}
 local texts = {}
@@ -25,56 +23,56 @@ end
 function serverHop(force)
     if stopHopping and not force then return end
 
-    local success, result = pcall(function()
+    local PlaceId, JobId = game.PlaceId, game.JobId
+    local foundServer = false
+    local maxAttempts = 10 
+    local attempt = 0
+
+    while not foundServer and attempt < maxAttempts do
+        attempt += 1
         task.wait(0.5)
-        local PlaceId, JobId = game.PlaceId, game.JobId
-        local cursor, tries = nil, 0
 
-        hops += 1
-        if hops >= 50 then
-            visitedJobIds = {[JobId] = true}
-            hops = 0
-        end
+        local cursor = nil
+        local pageTries = 0
 
-        while tries < 3 do
+        while pageTries < 5 do
+            pageTries += 1
             local url = "https://games.roblox.com/v1/games/" .. PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
             if cursor then url ..= "&cursor=" .. cursor end
 
-            local httpSuccess, response = pcall(function()
+            local success, response = pcall(function()
                 return HttpService:JSONDecode(game:HttpGet(url))
             end)
 
-            if httpSuccess and response and response.data then
-                local servers = {}
+            if success and response and response.data then
                 for _, server in ipairs(response.data) do
                     if tonumber(server.playing) < tonumber(server.maxPlayers)
                         and server.id ~= JobId
                         and not visitedJobIds[server.id] then
-                        table.insert(servers, server.id)
+                        visitedJobIds[server.id] = true
+                        hops += 1
+                        if hops >= 50 then
+                            visitedJobIds = {[JobId] = true}
+                            hops = 0
+                        end
+
+                        TeleportService:TeleportToPlaceInstance(PlaceId, server.id)
+                        foundServer = true
+                        return
                     end
                 end
 
-                if #servers > 0 then
-                    local picked = servers[math.random(1, #servers)]
-                    TeleportService:TeleportToPlaceInstance(PlaceId, picked)
-                    return
-                end
-
                 cursor = response.nextPageCursor
-                if not cursor then tries += 1; task.wait(0.2) end
+                if not cursor then break end
             else
-                tries += 1
                 task.wait(0.2)
             end
         end
+    end
 
+    if not foundServer then
+        warn("❌ Não foi possível encontrar outro servidor. Recarregando lugar atual.")
         TeleportService:Teleport(PlaceId)
-    end)
-
-    if not success then
-        warn("❌ serverHop erro:", result)
-        task.wait(1)
-        TeleportService:Teleport(game.PlaceId)
     end
 end
 
@@ -107,7 +105,7 @@ function enableESP()
                 local char = player.Character
                 local head = char:FindFirstChild("Head")
                 if head then
-                    local pos, onScreen = Camera:WorldToViewportPoint(head.Position + Vector3.new(0, 1.5, 0)) -- mais acima da cabeça
+                    local pos, onScreen = Camera:WorldToViewportPoint(head.Position + Vector3.new(0, 1.5, 0))
 
                     if not highlights[player] then
                         local hl = Instance.new("Highlight")
@@ -210,7 +208,7 @@ local function createGUI()
     local serverHopBtn = Instance.new("TextButton")
     serverHopBtn.Size = UDim2.new(0.9, 0, 0, 35)
     serverHopBtn.Position = UDim2.new(0.05, 0, 0, 40)
-    serverHopBtn.Text = "🔁 ServerHop"
+    serverHopBtn.Text = "ServerHop"
     serverHopBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     serverHopBtn.TextColor3 = Color3.new(1, 1, 1)
     serverHopBtn.Font = Enum.Font.SourceSansBold
@@ -223,7 +221,7 @@ local function createGUI()
     local espBtn = Instance.new("TextButton")
     espBtn.Size = UDim2.new(0.9, 0, 0, 35)
     espBtn.Position = UDim2.new(0.05, 0, 0, 85)
-    espBtn.Text = "🔦 ESP Jogadores"
+    espBtn.Text = "ESP Jogadores"
     espBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     espBtn.TextColor3 = Color3.new(1, 1, 1)
     espBtn.Font = Enum.Font.SourceSansBold
