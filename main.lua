@@ -273,34 +273,52 @@ local function createGUI()
     end)
 
     createButton("🛡️ Anti-Ragdoll", function()
-        local lp = game:GetService("Players").LocalPlayer
+    local lp = game:GetService("Players").LocalPlayer
 
-        local function scan()
-            local char = lp.Character or lp.CharacterAdded:Wait()
-            local hum = char:WaitForChild("Humanoid")
+    local function protectCharacter(char)
+        local hum = char:WaitForChild("Humanoid", 5)
+        if not hum then return end
 
-            for _, obj in pairs(char:GetDescendants()) do
-                if obj:IsA("BallSocketConstraint") or obj:IsA("HingeConstraint") or obj:IsA("NoCollisionConstraint") then
-                    obj:Destroy()
-                end
+        -- Remove constraints que causam ragdoll
+        for _, obj in ipairs(char:GetDescendants()) do
+            if obj:IsA("BallSocketConstraint") or obj:IsA("HingeConstraint") or obj:IsA("NoCollisionConstraint") then
+                obj:Destroy()
             end
-
-            hum.StateChanged:Connect(function(_, state)
-                if state == Enum.HumanoidStateType.Physics
-                or state == Enum.HumanoidStateType.FallingDown
-                or state == Enum.HumanoidStateType.PlatformStanding
-                or state == Enum.HumanoidStateType.Ragdoll then
-                    hum:ChangeState(Enum.HumanoidStateType.GettingUp)
-                end
-            end)
         end
 
-        task.spawn(scan)
-        lp.CharacterAdded:Connect(function()
-            task.wait(0.5)
-            scan()
+        hum.StateChanged:Connect(function(_, state)
+            if state == Enum.HumanoidStateType.Physics
+            or state == Enum.HumanoidStateType.FallingDown
+            or state == Enum.HumanoidStateType.PlatformStanding
+            or state == Enum.HumanoidStateType.Ragdoll then
+                hum:ChangeState(Enum.HumanoidStateType.GettingUp)
+            end
         end)
+
+        task.spawn(function()
+            while hum and hum.Parent do
+                if hum.PlatformStand then
+                    hum.PlatformStand = false
+                    hum:ChangeState(Enum.HumanoidStateType.Running)
+                end
+
+                if hum.HipHeight < 1 then hum.HipHeight = 2 end
+                if hum.WalkSpeed < 8 then hum.WalkSpeed = 16 end
+
+                task.wait(0.25)
+            end
+        end)
+    end
+
+    if lp.Character then
+        protectCharacter(lp.Character)
+    end
+
+    lp.CharacterAdded:Connect(function(char)
+        task.wait(0.3)
+        protectCharacter(char)
     end)
+end)
 
     serverHopButtonGui = gui
 end
