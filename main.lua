@@ -191,6 +191,9 @@ end
 local function createGUI()
     if serverHopButtonGui then return end
 
+    local Players = game:GetService("Players")
+    local LocalPlayer = Players.LocalPlayer
+
     local gui = Instance.new("ScreenGui")
     gui.Name = "DreamHubGUI"
     gui.ResetOnSpawn = false
@@ -198,21 +201,24 @@ local function createGUI()
     gui.Parent = getSafeGuiParent()
 
     local toggleBtn = Instance.new("TextButton")
-    toggleBtn.Size = UDim2.new(0, 44, 0, 44)
-    toggleBtn.Position = UDim2.new(0.5, -22, 0, 12)
-    toggleBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    toggleBtn.BorderSizePixel = 0
+    toggleBtn.Size = UDim2.new(0, 40, 0, 40)
+    toggleBtn.Position = UDim2.new(0.5, -20, 0, 10)
+    toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     toggleBtn.Text = "🌟"
     toggleBtn.Font = Enum.Font.GothamBold
-    toggleBtn.TextSize = 22
+    toggleBtn.TextSize = 20
     toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     toggleBtn.ZIndex = 10
     toggleBtn.AutoButtonColor = true
     toggleBtn.Parent = gui
 
+    local toggleCorner = Instance.new("UICorner")
+    toggleCorner.CornerRadius = UDim.new(0, 10)
+    toggleCorner.Parent = toggleBtn
+
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 260, 0, 250)
-    frame.Position = UDim2.new(0.5, -130, 0.4, 0)
+    frame.Size = UDim2.new(0, 240, 0, 220)
+    frame.Position = UDim2.new(0.5, -120, 0.4, 0)
     frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     frame.BorderSizePixel = 0
     frame.Active = true
@@ -220,15 +226,18 @@ local function createGUI()
     frame.Visible = true
     frame.Parent = gui
 
+    local frameCorner = Instance.new("UICorner")
+    frameCorner.CornerRadius = UDim.new(0, 15)
+    frameCorner.Parent = frame
+
     toggleBtn.MouseButton1Click:Connect(function()
         frame.Visible = not frame.Visible
     end)
 
     local layout = Instance.new("UIListLayout")
-    layout.Padding = UDim.new(0, 12)
+    layout.Padding = UDim.new(0, 8)
     layout.SortOrder = Enum.SortOrder.LayoutOrder
     layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-    layout.VerticalAlignment = Enum.VerticalAlignment.Top
     layout.Parent = frame
 
     local padding = Instance.new("UIPadding")
@@ -238,40 +247,46 @@ local function createGUI()
     padding.Parent = frame
 
     local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, -24, 0, 40)
+    title.Size = UDim2.new(1, -24, 0, 30)
     title.BackgroundTransparency = 1
     title.Text = "🌟 DreamHub"
     title.Font = Enum.Font.GothamBold
-    title.TextSize = 22
+    title.TextSize = 20
     title.TextColor3 = Color3.fromRGB(255, 255, 255)
     title.TextXAlignment = Enum.TextXAlignment.Center
     title.Parent = frame
 
+    local clickSound = Instance.new("Sound")
+    clickSound.SoundId = "rbxassetid://18705898425"
+    clickSound.Volume = 1
+    clickSound.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
     local function createButton(label, onClick)
         local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(1, -24, 0, 38)
+        btn.Size = UDim2.new(1, -24, 0, 32)
         btn.Text = label
-        btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
         btn.BorderSizePixel = 0
-        btn.TextColor3 = Color3.fromRGB(230, 230, 230)
+        btn.TextColor3 = Color3.fromRGB(235, 235, 235)
         btn.Font = Enum.Font.GothamMedium
-        btn.TextSize = 17
+        btn.TextSize = 15
         btn.AutoButtonColor = true
         btn.Parent = frame
-        btn.BackgroundTransparency = 0
-        btn.ClipsDescendants = true
-        btn.AnchorPoint = Vector2.new(0.5, 0)
 
-        local corner = Instance.new("UICorner", btn)
-        corner.CornerRadius = UDim.new(0, 6)
+        local btnCorner = Instance.new("UICorner")
+        btnCorner.CornerRadius = UDim.new(0, 10)
+        btnCorner.Parent = btn
 
         btn.MouseEnter:Connect(function()
-            btn.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+            btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
         end)
         btn.MouseLeave:Connect(function()
-            btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+            btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
         end)
-        btn.MouseButton1Click:Connect(onClick)
+        btn.MouseButton1Click:Connect(function()
+            clickSound:Play()
+            onClick()
+        end)
     end
 
     createButton("🔄 Trocar Servidor", function()
