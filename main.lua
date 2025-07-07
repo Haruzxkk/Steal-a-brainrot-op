@@ -13,7 +13,6 @@ local visitedJobIds = {[game.JobId] = true}
 local stopHopping = false
 local detectedPets = {}
 local highlights = {}
-local boxes = {}
 local texts = {}
 local serverHopButtonGui = nil
 local teleportFails = 0
@@ -94,7 +93,6 @@ end
 
 local function removeESP(player)
     if highlights[player] then highlights[player]:Destroy() highlights[player] = nil end
-    if boxes[player] then boxes[player]:Destroy() boxes[player] = nil end
     if texts[player] then texts[player]:Remove() texts[player] = nil end
 end
 
@@ -104,9 +102,8 @@ end
 
 function enableESP()
     for _, v in pairs(highlights) do if v then v:Destroy() end end
-    for _, v in pairs(boxes) do if v then v:Destroy() end end
     for _, v in pairs(texts) do if v then v:Remove() end end
-    highlights, boxes, texts = {}, {}, {}
+    highlights, texts = {}, {}
 
     setupPlayerRemoval()
 
@@ -115,9 +112,8 @@ function enableESP()
         for _, player in ipairs(Players:GetPlayers()) do
             if player ~= LocalPlayer and player.Character then
                 local char = player.Character
-                local hrp = char:FindFirstChild("HumanoidRootPart")
                 local head = char:FindFirstChild("Head")
-                if not hrp or not head then continue end
+                if not head then continue end
 
                 if not highlights[player] then
                     local hl = Instance.new("Highlight")
@@ -129,18 +125,6 @@ function enableESP()
                     hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
                     hl.Parent = game:GetService("CoreGui")
                     highlights[player] = hl
-                end
-
-                if not boxes[player] then
-                    local box = Instance.new("BoxHandleAdornment")
-                    box.Adornee = hrp
-                    box.AlwaysOnTop = true
-                    box.ZIndex = 0
-                    box.Size = Vector3.new(4, 6, 2)
-                    box.Color3 = Color3.fromRGB(255, 255, 255)
-                    box.Transparency = 0
-                    box.Parent = game:GetService("CoreGui")
-                    boxes[player] = box
                 end
 
                 local screenPos, onScreen = Camera:WorldToViewportPoint(head.Position + Vector3.new(0, 2.2, 0))
