@@ -198,9 +198,9 @@ local function createGUI()
     gui.Parent = getSafeGuiParent()
 
     local toggleBtn = Instance.new("TextButton")
-    toggleBtn.Size = UDim2.new(0, 40, 0, 40)
-    toggleBtn.Position = UDim2.new(0.5, -20, 0, 10)
-    toggleBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    toggleBtn.Size = UDim2.new(0, 44, 0, 44)
+    toggleBtn.Position = UDim2.new(0.5, -22, 0, 12)
+    toggleBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     toggleBtn.BorderSizePixel = 0
     toggleBtn.Text = "🌟"
     toggleBtn.Font = Enum.Font.GothamBold
@@ -211,9 +211,9 @@ local function createGUI()
     toggleBtn.Parent = gui
 
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 240, 0, 200)
-    frame.Position = UDim2.new(0.5, -120, 0.4, 0)
-    frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    frame.Size = UDim2.new(0, 260, 0, 250)
+    frame.Position = UDim2.new(0.5, -130, 0.4, 0)
+    frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     frame.BorderSizePixel = 0
     frame.Active = true
     frame.Draggable = true
@@ -225,37 +225,51 @@ local function createGUI()
     end)
 
     local layout = Instance.new("UIListLayout")
-    layout.Padding = UDim.new(0, 10)
+    layout.Padding = UDim.new(0, 12)
     layout.SortOrder = Enum.SortOrder.LayoutOrder
+    layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    layout.VerticalAlignment = Enum.VerticalAlignment.Top
     layout.Parent = frame
 
+    local padding = Instance.new("UIPadding")
+    padding.PaddingTop = UDim.new(0, 12)
+    padding.PaddingLeft = UDim.new(0, 12)
+    padding.PaddingRight = UDim.new(0, 12)
+    padding.Parent = frame
+
     local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, 0, 0, 40)
+    title.Size = UDim2.new(1, -24, 0, 40)
     title.BackgroundTransparency = 1
     title.Text = "🌟 DreamHub"
     title.Font = Enum.Font.GothamBold
     title.TextSize = 22
     title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.TextXAlignment = Enum.TextXAlignment.Center
     title.Parent = frame
 
     local function createButton(label, onClick)
         local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(0.9, 0, 0, 38)
-        btn.Position = UDim2.new(0.05, 0, 0, 0)
+        btn.Size = UDim2.new(1, -24, 0, 38)
         btn.Text = label
-        btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
         btn.BorderSizePixel = 0
-        btn.TextColor3 = Color3.fromRGB(240, 240, 240)
+        btn.TextColor3 = Color3.fromRGB(230, 230, 230)
         btn.Font = Enum.Font.GothamMedium
         btn.TextSize = 17
         btn.AutoButtonColor = true
         btn.Parent = frame
+        btn.BackgroundTransparency = 0
+        btn.ClipsDescendants = true
+        btn.AnchorPoint = Vector2.new(0.5, 0)
+
+        local corner = Instance.new("UICorner", btn)
+        corner.CornerRadius = UDim.new(0, 6)
 
         btn.MouseEnter:Connect(function()
-            btn.BackgroundColor3 = Color3.fromRGB(65, 65, 65)
+            btn.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
         end)
         btn.MouseLeave:Connect(function()
-            btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+            btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
         end)
         btn.MouseButton1Click:Connect(onClick)
     end
