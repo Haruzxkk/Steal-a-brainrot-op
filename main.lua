@@ -289,11 +289,11 @@ local function createGUI()
         end)
     end
 
-    createButton("🔄 Trocar Servidor", function()
+    createButton("ServerHop", function()
         serverHop(true)
     end)
 
-    createButton("🧿 Ativar ESP", function()
+    createButton("ESP Jogadores", function()
         enableESP()
     end)
 
