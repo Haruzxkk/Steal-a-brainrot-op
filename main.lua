@@ -202,19 +202,21 @@ local function createGUI()
     gui.IgnoreGuiInset = true
     gui.Parent = getSafeGuiParent()
 
-    local toggleBtn = Instance.new("ImageButton")
+    local toggleBtn = Instance.new("TextButton")
     toggleBtn.Size = UDim2.new(0, 40, 0, 40)
-    toggleBtn.Position = UDim2.new(0, 10, 0, 10)
+    toggleBtn.Position = UDim2.new(0.5, -20, 0, 10)
     toggleBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
     toggleBtn.BorderSizePixel = 0
-    toggleBtn.Image = "🌟"
-    toggleBtn.ScaleType = Enum.ScaleType.Fit
+    toggleBtn.Text = "🌟"
+    toggleBtn.Font = Enum.Font.GothamBold
+    toggleBtn.TextSize = 22
+    toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     toggleBtn.ZIndex = 10
     toggleBtn.AutoButtonColor = true
     toggleBtn.Parent = gui
 
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 240, 0, 260)
+    frame.Size = UDim2.new(0, 240, 0, 200)
     frame.Position = UDim2.new(0.5, -120, 0.4, 0)
     frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     frame.BorderSizePixel = 0
@@ -269,51 +271,6 @@ local function createGUI()
 
     createButton("🧿 Ativar ESP", function()
         enableESP()
-    end)
-
-    createButton("🛡️ Anti-Ragdoll", function()
-        local lp = game:GetService("Players").LocalPlayer
-        local function protectCharacter(char)
-            local hum = char:WaitForChild("Humanoid", 5)
-            if not hum then return end
-            for _, obj in ipairs(char:GetDescendants()) do
-                if obj:IsA("BallSocketConstraint") or obj:IsA("HingeConstraint") or obj:IsA("NoCollisionConstraint") then
-                    obj:Destroy()
-                end
-            end
-            local states = {
-                Enum.HumanoidStateType.Ragdoll,
-                Enum.HumanoidStateType.FallingDown,
-                Enum.HumanoidStateType.Physics,
-                Enum.HumanoidStateType.PlatformStanding
-            }
-            for _, s in ipairs(states) do
-                pcall(function() hum:SetStateEnabled(s, false) end)
-            end
-            hum.StateChanged:Connect(function(_, state)
-                if table.find(states, state) then
-                    hum:ChangeState(Enum.HumanoidStateType.GettingUp)
-                end
-            end)
-            task.spawn(function()
-                while hum and hum.Parent do
-                    if hum.PlatformStand then
-                        hum.PlatformStand = false
-                        hum:ChangeState(Enum.HumanoidStateType.Running)
-                    end
-                    if hum.HipHeight < 1 then hum.HipHeight = 2 end
-                    if hum.WalkSpeed < 8 then hum.WalkSpeed = 16 end
-                    task.wait(0.25)
-                end
-            end)
-        end
-        if lp.Character then
-            protectCharacter(lp.Character)
-        end
-        lp.CharacterAdded:Connect(function(char)
-            task.wait(0.3)
-            protectCharacter(char)
-        end)
     end)
 
     serverHopButtonGui = gui
