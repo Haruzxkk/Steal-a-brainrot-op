@@ -123,7 +123,6 @@ function enableESP()
                     local worldPos = hrp.Position + offset
                     local screenPos, onScreen = Camera:WorldToViewportPoint(worldPos)
 
-                    -- Highlight roxo
                     if not highlights[player] then
                         local hl = Instance.new("Highlight")
                         hl.Adornee = char
@@ -135,7 +134,6 @@ function enableESP()
                         hl.Parent = game:GetService("CoreGui")
                         highlights[player] = hl
 
-                        -- Box 3D branca
                         local box = Instance.new("BoxHandleAdornment")
                         box.Name = "PlayerBox"
                         box.Adornee = hrp
