@@ -12,6 +12,9 @@ local hops = 0
 local visitedJobIds = {[game.JobId] = true}
 local stopHopping = false
 local detectedPets = {}
+local highlights = {}
+local boxes = {}
+local texts = {}
 local serverHopButtonGui = nil
 local teleportFails = 0
 local maxTeleportRetries = 3
@@ -90,14 +93,9 @@ function serverHop(force)
 end
 
 local function removeESP(player)
-    if highlights[player] then
-        highlights[player]:Destroy()
-        highlights[player] = nil
-    end
-    if texts[player] then
-        texts[player]:Remove()
-        texts[player] = nil
-    end
+    if highlights[player] then highlights[player]:Destroy() highlights[player] = nil end
+    if boxes[player] then boxes[player]:Destroy() boxes[player] = nil end
+    if texts[player] then texts[player]:Remove() texts[player] = nil end
 end
 
 local function setupPlayerRemoval()
@@ -105,12 +103,10 @@ local function setupPlayerRemoval()
 end
 
 function enableESP()
-    highlights = highlights or {}
-    texts = texts or {}
-
     for _, v in pairs(highlights) do if v then v:Destroy() end end
+    for _, v in pairs(boxes) do if v then v:Destroy() end end
     for _, v in pairs(texts) do if v then v:Remove() end end
-    highlights, texts = {}, {}
+    highlights, boxes, texts = {}, {}, {}
 
     setupPlayerRemoval()
 
@@ -120,48 +116,48 @@ function enableESP()
             if player ~= LocalPlayer and player.Character then
                 local char = player.Character
                 local hrp = char:FindFirstChild("HumanoidRootPart")
+                local head = char:FindFirstChild("Head")
+                if not hrp or not head then continue end
 
-                if hrp then
-                    local dist = (Camera.CFrame.Position - hrp.Position).Magnitude
-                    local offset = Vector3.new(0, 3.5 + math.clamp(dist / 25, 0, 6), 0)
-                    local headWorldPos = hrp.Position + offset
-                    local screenPos, onScreen = Camera:WorldToViewportPoint(headWorldPos)
+                if not highlights[player] then
+                    local hl = Instance.new("Highlight")
+                    hl.Adornee = char
+                    hl.FillColor = Color3.fromRGB(255, 0, 0)
+                    hl.FillTransparency = 0.6
+                    hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+                    hl.OutlineTransparency = 0
+                    hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                    hl.Parent = game:GetService("CoreGui")
+                    highlights[player] = hl
+                end
 
-                    if not highlights[player] then
-                        local hl = Instance.new("Highlight")
-                        hl.Adornee = char
-                        hl.FillColor = Color3.fromRGB(160, 0, 255)
-                        hl.FillTransparency = 0.3
-                        hl.OutlineColor = Color3.fromRGB(255, 255, 255)
-                        hl.OutlineTransparency = 0
-                        hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-                        hl.Parent = game:GetService("CoreGui")
-                        highlights[player] = hl
+                if not boxes[player] then
+                    local box = Instance.new("BoxHandleAdornment")
+                    box.Adornee = hrp
+                    box.AlwaysOnTop = true
+                    box.ZIndex = 0
+                    box.Size = Vector3.new(4, 6, 2)
+                    box.Color3 = Color3.fromRGB(255, 255, 255)
+                    box.Transparency = 0
+                    box.Parent = game:GetService("CoreGui")
+                    boxes[player] = box
+                end
 
-                        local box = Instance.new("BoxHandleAdornment")
-                        box.Name = "PlayerBox"
-                        box.Adornee = hrp
-                        box.Size = Vector3.new(4, 6, 2)
-                        box.AlwaysOnTop = true
-                        box.ZIndex = 0
-                        box.Color3 = Color3.new(1, 1, 1)
-                        box.Transparency = 0.25
-                        box.Parent = hl
-                    end
-
-                    texts[player] = texts[player] or Drawing.new("Text")
-                    local label = texts[player]
-                    label.Text = player.Name
-                    label.Size = 20
+                local screenPos, onScreen = Camera:WorldToViewportPoint(head.Position + Vector3.new(0, 2.2, 0))
+                if not texts[player] then
+                    local label = Drawing.new("Text")
+                    label.Size = 18
                     label.Center = true
                     label.Outline = true
                     label.Color = Color3.fromRGB(255, 255, 255)
                     label.Transparency = 1
-                    label.Position = Vector2.new(screenPos.X, screenPos.Y - 14)
-                    label.Visible = onScreen
-                else
-                    if texts[player] then texts[player].Visible = false end
+                    texts[player] = label
                 end
+
+                local label = texts[player]
+                label.Text = player.Name
+                label.Position = Vector2.new(screenPos.X, screenPos.Y)
+                label.Visible = onScreen
             else
                 removeESP(player)
             end
