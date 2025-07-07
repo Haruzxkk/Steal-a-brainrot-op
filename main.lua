@@ -13,10 +13,8 @@ local visitedJobIds = {[game.JobId] = true}
 local stopHopping = false
 local detectedPets = {}
 local serverHopButtonGui = nil
-local highlights = {}
 local teleportFails = 0
 local maxTeleportRetries = 3
-local texts = {}
 
 local function getSafeGuiParent()
     return (gethui and gethui()) or (syn and syn.protect_gui and syn.protect_gui(CoreGui)) or CoreGui
@@ -118,20 +116,32 @@ function enableESP()
         for _, player in ipairs(Players:GetPlayers()) do
             if player ~= LocalPlayer and player.Character then
                 local char = player.Character
-                local head = char:FindFirstChild("Head")
-                if head then
-                    local pos, onScreen = Camera:WorldToViewportPoint(head.Position + Vector3.new(0, 1.5, 0))
+                local hrp = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Head") or char.PrimaryPart
+                if hrp then
+                    local dist = (Camera.CFrame.Position - hrp.Position).Magnitude
+                    local headPos = hrp.Position + Vector3.new(0, 3 + math.clamp(dist / 30, 0, 5), 0)
+                    local pos, onScreen = Camera:WorldToViewportPoint(headPos)
 
                     if not highlights[player] then
                         local hl = Instance.new("Highlight")
                         hl.Adornee = char
-                        hl.FillColor = Color3.fromRGB(255, 0, 0)
-                        hl.FillTransparency = 0.5
+                        hl.FillColor = Color3.fromRGB(130, 0, 200) -- Roxo
+                        hl.FillTransparency = 0.4
                         hl.OutlineColor = Color3.fromRGB(255, 255, 255)
                         hl.OutlineTransparency = 0
                         hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
                         hl.Parent = game:GetService("CoreGui")
                         highlights[player] = hl
+
+                        local box = Instance.new("BoxHandleAdornment")
+                        box.Name = "PlayerBox"
+                        box.Adornee = hrp
+                        box.Size = Vector3.new(4, 6, 2)
+                        box.ZIndex = 0
+                        box.AlwaysOnTop = true
+                        box.Color3 = Color3.fromRGB(255, 255, 255)
+                        box.Transparency = 0.2
+                        box.Parent = hl
                     end
 
                     texts[player] = texts[player] or Drawing.new("Text")
