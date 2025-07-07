@@ -105,6 +105,9 @@ local function setupPlayerRemoval()
 end
 
 function enableESP()
+    highlights = highlights or {}
+    texts = texts or {}
+
     for _, v in pairs(highlights) do if v then v:Destroy() end end
     for _, v in pairs(texts) do if v then v:Remove() end end
     highlights, texts = {}, {}
@@ -117,17 +120,18 @@ function enableESP()
             if player ~= LocalPlayer and player.Character then
                 local char = player.Character
                 local hrp = char:FindFirstChild("HumanoidRootPart")
+
                 if hrp then
-                    local distance = (Camera.CFrame.Position - hrp.Position).Magnitude
-                    local offset = Vector3.new(0, 3.5 + math.clamp(distance / 25, 0, 5), 0)
-                    local worldPos = hrp.Position + offset
-                    local screenPos, onScreen = Camera:WorldToViewportPoint(worldPos)
+                    local dist = (Camera.CFrame.Position - hrp.Position).Magnitude
+                    local offset = Vector3.new(0, 3.5 + math.clamp(dist / 25, 0, 6), 0)
+                    local headWorldPos = hrp.Position + offset
+                    local screenPos, onScreen = Camera:WorldToViewportPoint(headWorldPos)
 
                     if not highlights[player] then
                         local hl = Instance.new("Highlight")
                         hl.Adornee = char
-                        hl.FillColor = Color3.fromRGB(160, 0, 255) -- Roxo
-                        hl.FillTransparency = 0.35
+                        hl.FillColor = Color3.fromRGB(160, 0, 255)
+                        hl.FillTransparency = 0.3
                         hl.OutlineColor = Color3.fromRGB(255, 255, 255)
                         hl.OutlineTransparency = 0
                         hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
@@ -141,7 +145,7 @@ function enableESP()
                         box.AlwaysOnTop = true
                         box.ZIndex = 0
                         box.Color3 = Color3.new(1, 1, 1)
-                        box.Transparency = 0.2
+                        box.Transparency = 0.25
                         box.Parent = hl
                     end
 
@@ -153,7 +157,7 @@ function enableESP()
                     label.Outline = true
                     label.Color = Color3.fromRGB(255, 255, 255)
                     label.Transparency = 1
-                    label.Position = Vector2.new(screenPos.X, screenPos.Y - 12)
+                    label.Position = Vector2.new(screenPos.X, screenPos.Y - 14)
                     label.Visible = onScreen
                 else
                     if texts[player] then texts[player].Visible = false end
