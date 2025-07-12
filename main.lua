@@ -228,8 +228,8 @@ local function createGUI()
     toggleCorner.Parent = toggleBtn
 
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 240, 0, 300)
-    frame.Position = UDim2.new(0.5, -120, 0.4, 0)
+    frame.Size = UDim2.new(0, 260, 0, 300)
+    frame.Position = UDim2.new(0.5, -130, 0.4, 0)
     frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     frame.BorderSizePixel = 0
     frame.Active = true
@@ -245,20 +245,9 @@ local function createGUI()
         frame.Visible = not frame.Visible
     end)
 
-    local layout = Instance.new("UIListLayout")
-    layout.Padding = UDim.new(0, 8)
-    layout.SortOrder = Enum.SortOrder.LayoutOrder
-    layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-    layout.Parent = frame
-
-    local padding = Instance.new("UIPadding")
-    padding.PaddingTop = UDim.new(0, 12)
-    padding.PaddingLeft = UDim.new(0, 12)
-    padding.PaddingRight = UDim.new(0, 12)
-    padding.Parent = frame
-
     local title = Instance.new("TextLabel")
     title.Size = UDim2.new(1, -24, 0, 30)
+    title.Position = UDim2.new(0, 12, 0, 12)
     title.BackgroundTransparency = 1
     title.Text = "🌟 DreamHub"
     title.Font = Enum.Font.GothamBold
@@ -272,61 +261,120 @@ local function createGUI()
     clickSound.Volume = 1
     clickSound.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
-    local function createButton(label, onClick)
-        local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(1, -24, 0, 32)
-        btn.Text = label
-        btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-        btn.BorderSizePixel = 0
-        btn.TextColor3 = Color3.fromRGB(235, 235, 235)
-        btn.Font = Enum.Font.GothamMedium
-        btn.TextSize = 15
-        btn.AutoButtonColor = true
-        btn.Parent = frame
+    local pages = {}
+    local currentPage = 1
+    local buttonsPerPage = 3
+    local buttonsData = {
+        { label = "ServerHop", action = function() serverHop(true) end },
+        { label = "ESP Jogadores", action = function() enableESP() end },
+        { label = "Cabeça de Medusa", action = function() buyItem("Medusa's Head") end },
+        { label = "Capa de invisibilidade", action = function() buyItem("Invisibility Cloak") end },
+        { label = "Sentinela", action = function() buyItem("All Seeing Sentry") end },
+        { label = "Clonador Quantico", action = function() buyItem("Quantum Cloner") end },
+        { label = "Armadilha", action = function() buyItem("Trap") end },
+    }
 
-        local btnCorner = Instance.new("UICorner")
-        btnCorner.CornerRadius = UDim.new(0, 10)
-        btnCorner.Parent = btn
+    local function createPages()
+        for _, p in pairs(pages) do p:Destroy() end
+        pages = {}
 
-        btn.MouseEnter:Connect(function()
-            btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-        end)
-        btn.MouseLeave:Connect(function()
-            btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-        end)
-        btn.MouseButton1Click:Connect(function()
-            clickSound:Play()
-            onClick()
-        end)
+        local totalPages = math.ceil(#buttonsData / buttonsPerPage)
+
+        for i = 1, totalPages do
+            local page = Instance.new("Frame")
+            page.Size = UDim2.new(1, -24, 0, 180)
+            page.Position = UDim2.new(0, 12, 0, 50)
+            page.BackgroundTransparency = 1
+            page.Visible = false
+            page.Parent = frame
+
+            local layout = Instance.new("UIListLayout")
+            layout.Padding = UDim.new(0, 8)
+            layout.FillDirection = Enum.FillDirection.Vertical
+            layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+            layout.SortOrder = Enum.SortOrder.LayoutOrder
+            layout.Parent = page
+
+            for j = 1, buttonsPerPage do
+                local index = (i - 1) * buttonsPerPage + j
+                local data = buttonsData[index]
+                if data then
+                    local btn = Instance.new("TextButton")
+                    btn.Size = UDim2.new(1, 0, 0, 36)
+                    btn.Text = data.label
+                    btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+                    btn.BorderSizePixel = 0
+                    btn.TextColor3 = Color3.fromRGB(235, 235, 235)
+                    btn.Font = Enum.Font.GothamMedium
+                    btn.TextSize = 15
+                    btn.AutoButtonColor = true
+                    btn.Parent = page
+
+                    local btnCorner = Instance.new("UICorner")
+                    btnCorner.CornerRadius = UDim.new(0, 10)
+                    btnCorner.Parent = btn
+
+                    btn.MouseEnter:Connect(function()
+                        btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+                    end)
+                    btn.MouseLeave:Connect(function()
+                        btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+                    end)
+                    btn.MouseButton1Click:Connect(function()
+                        clickSound:Play()
+                        data.action()
+                    end)
+                end
+            end
+
+            table.insert(pages, page)
+        end
     end
 
-    createButton("ServerHop", function()
-        serverHop(true)
-    end)
+    local function showPage(pageNum)
+        for i, page in ipairs(pages) do
+            page.Visible = (i == pageNum)
+        end
+        currentPage = pageNum
+    end
 
-    createButton("ESP Jogadores", function()
-        enableESP()
-    end)
+    local function createPageNav()
+        local navFrame = Instance.new("Frame")
+        navFrame.Size = UDim2.new(1, -24, 0, 30)
+        navFrame.Position = UDim2.new(0, 12, 1, -40)
+        navFrame.BackgroundTransparency = 1
+        navFrame.Parent = frame
 
-    createButton("Cabeça de Medusa", function()
-        buyItem("Medusa's Head")
-    end)
+        local layout = Instance.new("UIListLayout")
+        layout.FillDirection = Enum.FillDirection.Horizontal
+        layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+        layout.SortOrder = Enum.SortOrder.LayoutOrder
+        layout.Padding = UDim.new(0, 6)
+        layout.Parent = navFrame
 
-    createButton("Capa De Invisibilidade", function()
-        buyItem("Invisibility Cloak")
-    end)
+        for i = 1, #pages do
+            local btn = Instance.new("TextButton")
+            btn.Size = UDim2.new(0, 24, 1, 0)
+            btn.Text = tostring(i)
+            btn.Font = Enum.Font.GothamBold
+            btn.TextSize = 14
+            btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+            btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+            btn.Parent = navFrame
 
-    createButton("Armadilha", function()
-        buyItem("Trap")
-    end)
+            local corner = Instance.new("UICorner")
+            corner.CornerRadius = UDim.new(0, 6)
+            corner.Parent = btn
 
-    createButton("Sentinela", function()
-        buyItem("All Seeing Sentry")
-    end)
+            btn.MouseButton1Click:Connect(function()
+                showPage(i)
+            end)
+        end
+    end
 
-    createButton("Clonador Quantico", function()
-        buyItem("Quantum Cloner")
-    end)
+    createPages()
+    showPage(1)
+    createPageNav()
 
     serverHopButtonGui = gui
 end
