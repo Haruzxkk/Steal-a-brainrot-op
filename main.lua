@@ -290,7 +290,7 @@ local buttonsData = {
     { label = "ServerHop", action = function() serverHop(true) end },  
     { label = "ESP Jogadores", action = function() enableESP() end },  
     {  
-        label = "Instant Steal (Key Arbix Hub)",  
+        label = "Instant Steal",  
         action = function()  
           showNotification(gui, "Key Arbix Hub", 7)
             loadstring(game:HttpGet("https://raw.githubusercontent.com/Youifpg/Steal-a-Brianrot/refs/heads/main/Slowversion.lua"))()  
