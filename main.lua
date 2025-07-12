@@ -188,6 +188,17 @@ local function checkForPets()
     return found
 end
 
+local function buyItem(itemName)
+    pcall(function()
+        local args = {itemName}
+        game:GetService("ReplicatedStorage")
+            :WaitForChild("Packages")
+            :WaitForChild("Net")
+            :WaitForChild("RF/CoinsShopService/RequestBuy")
+            :InvokeServer(unpack(args))
+    end)
+end
+
 local function createGUI()
     if serverHopButtonGui then return end
 
@@ -217,7 +228,7 @@ local function createGUI()
     toggleCorner.Parent = toggleBtn
 
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 240, 0, 220)
+    frame.Size = UDim2.new(0, 240, 0, 300)
     frame.Position = UDim2.new(0.5, -120, 0.4, 0)
     frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     frame.BorderSizePixel = 0
@@ -295,6 +306,22 @@ local function createGUI()
 
     createButton("ESP Jogadores", function()
         enableESP()
+    end)
+
+    createButton("Medusa's Head", function()
+        buyItem("Medusa's Head")
+    end)
+
+    createButton("Invisibility Cloak", function()
+        buyItem("Invisibility Cloak")
+    end)
+
+    createButton("All Seeing Sentry", function()
+        buyItem("All Seeing Sentry")
+    end)
+
+    createButton("Quantum Cloner", function()
+        buyItem("Quantum Cloner")
     end)
 
     serverHopButtonGui = gui
