@@ -199,6 +199,27 @@ local function buyItem(itemName)
     end)
 end
 
+local function showNotification(parentGui, text, duration)
+    duration = duration or 7
+    local notification = Instance.new("TextLabel")
+    notification.Size = UDim2.new(0, 200, 0, 50)
+    notification.Position = UDim2.new(0.5, -100, 0, 50)
+    notification.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    notification.BorderSizePixel = 0
+    notification.TextColor3 = Color3.fromRGB(255, 255, 255)
+    notification.Font = Enum.Font.GothamBold
+    notification.TextSize = 18
+    notification.Text = text
+    notification.TextStrokeTransparency = 0.7
+    notification.ZIndex = 20
+    notification.Parent = parentGui
+
+    spawn(function()
+        wait(duration)
+        notification:Destroy()
+    end)
+end
+
 local function createGUI()
     if serverHopButtonGui then return end
 
@@ -210,7 +231,7 @@ local function createGUI()
     gui.ResetOnSpawn = false
     gui.IgnoreGuiInset = true
     gui.Parent = getSafeGuiParent()
-
+    
     local toggleBtn = Instance.new("TextButton")
     toggleBtn.Size = UDim2.new(0, 40, 0, 40)
     toggleBtn.Position = UDim2.new(0.5, -20, 0, 10)
@@ -269,9 +290,10 @@ local function createGUI()
         { label = "ServerHop", action = function() serverHop(true) end },
         { label = "ESP Jogadores", action = function() enableESP() end },
         {
-            label = "Instant Steal (Key Arbix Hub)",
+            label = "Instant Steal",
             action = function()
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/Youifpg/Steal-a-Brianrot/refs/heads/main/Slowversion.lua"))()
+              showNotification(gui, "Key Arbix Hub", 7)
+  loadstring(game:HttpGet("https://raw.githubusercontent.com/Youifpg/Steal-a-Brianrot/refs/heads/main/Slowversion.lua"))()
             end
         },
         { label = "Cabeça de Medusa", action = function() buyItem("Medusa's Head") end },
