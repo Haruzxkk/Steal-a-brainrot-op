@@ -308,19 +308,23 @@ local function createGUI()
         enableESP()
     end)
 
-    createButton("Medusa's Head", function()
+    createButton("Cabeça de Medusa", function()
         buyItem("Medusa's Head")
     end)
 
-    createButton("Invisibility Cloak", function()
+    createButton("Capa De Invisibilidade", function()
         buyItem("Invisibility Cloak")
     end)
 
-    createButton("All Seeing Sentry", function()
+    createButton("Armadilha", function()
+        buyItem("Trap")
+    end)
+
+    createButton("Sentinela", function()
         buyItem("All Seeing Sentry")
     end)
 
-    createButton("Quantum Cloner", function()
+    createButton("Clonador Quantico", function()
         buyItem("Quantum Cloner")
     end)
 
