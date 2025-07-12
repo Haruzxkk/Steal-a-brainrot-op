@@ -303,137 +303,134 @@ local buttonsData = {
     { label = "Armadilha", action = function() buyItem("Trap") end },  
 }  
 
-local function updateFrameHeight(numButtons)  
-    local buttonHeight = 36  
-    local buttonPadding = 8  
-    local topMargin = 12 + 30 + 8  
-    local bottomMargin = 30 + 10  
+local function updateFrameHeight(numButtons)
+        local buttonHeight = 36
+        local buttonPadding = 8
+        local topMargin = 12 + 30 + 8
+        local bottomMargin = 30 + 10
 
-    local totalHeight = topMargin + (numButtons * (buttonHeight + buttonPadding)) - buttonPadding + bottomMargin  
-    frame.Size = UDim2.new(0, 260, 0, totalHeight)  
-end  
+        local totalHeight = topMargin + (numButtons * (buttonHeight + buttonPadding)) - buttonPadding + bottomMargin
+        frame.Size = UDim2.new(0, 260, 0, totalHeight)
+    end
 
-local function createPages()  
-    for _, p in pairs(pages) do  
-        if p and p.Destroy then p:Destroy() end  
-    end  
-    pages = {}  
+    local function createPages()
+        for _, p in pairs(pages) do
+            if p and p.Destroy then p:Destroy() end
+        end
+        pages = {}
 
-    local totalPages = math.ceil(#buttonsData / buttonsPerPage)  
+        local totalPages = math.ceil(#buttonsData / buttonsPerPage)
 
-    for i = 1, totalPages do  
-        local page = Instance.new("Frame")  
-        page.Size = UDim2.new(1, -24, 0, 108)  
-        page.Position = UDim2.new(0, 12, 0, 50)  
-        page.BackgroundTransparency = 1  
-        page.Name = "Page" .. i  
-        page.Parent = frame  
+        for i = 1, totalPages do
+            local page = Instance.new("Frame")
+            page.Size = UDim2.new(1, -24, 0, 108)
+            page.Position = UDim2.new(0, 12, 0, 50)
+            page.BackgroundTransparency = 1
+            page.Name = "Page" .. i
+            page.Parent = frame
 
-        local layout = Instance.new("UIListLayout")  
-        layout.Padding = UDim.new(0, 8)  
-        layout.FillDirection = Enum.FillDirection.Vertical  
-        layout.HorizontalAlignment = Enum.HorizontalAlignment.Center  
-        layout.SortOrder = Enum.SortOrder.LayoutOrder  
-        layout.VerticalAlignment = Enum.VerticalAlignment.Top  
-        layout.Parent = page  
+            local layout = Instance.new("UIListLayout")
+            layout.Padding = UDim.new(0, 8)
+            layout.FillDirection = Enum.FillDirection.Vertical
+            layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+            layout.SortOrder = Enum.SortOrder.LayoutOrder
+            layout.VerticalAlignment = Enum.VerticalAlignment.Top
+            layout.Parent = page
 
-        for j = 1, buttonsPerPage do  
-            local index = (i - 1) * buttonsPerPage + j  
-            local data = buttonsData[index]  
-            if data then  
-                local btn = Instance.new("TextButton")  
-                btn.Size = UDim2.new(1, 0, 0, 36)  
-                btn.Text = data.label  
-                btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)  
-                btn.BorderSizePixel = 0  
-                btn.TextColor3 = Color3.fromRGB(235, 235, 235)  
-                btn.Font = Enum.Font.GothamMedium  
-                btn.TextSize = 15  
-                btn.AutoButtonColor = true  
-                btn.Parent = page  
+            for j = 1, buttonsPerPage do
+                local index = (i - 1) * buttonsPerPage + j
+                local data = buttonsData[index]
+                if data then
+                    local btn = Instance.new("TextButton")
+                    btn.Size = UDim2.new(1, 0, 0, 36)
+                    btn.Text = data.label
+                    btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+                    btn.BorderSizePixel = 0
+                    btn.TextColor3 = Color3.fromRGB(235, 235, 235)
+                    btn.Font = Enum.Font.GothamMedium
+                    btn.TextSize = 15
+                    btn.AutoButtonColor = true
+                    btn.Parent = page
 
-                local btnCorner = Instance.new("UICorner")  
-                btnCorner.CornerRadius = UDim.new(0, 10)  
-                btnCorner.Parent = btn  
+                    local btnCorner = Instance.new("UICorner")
+                    btnCorner.CornerRadius = UDim.new(0, 10)
+                    btnCorner.Parent = btn
 
-                btn.MouseEnter:Connect(function()  
-                    btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)  
-                end)  
-                btn.MouseLeave:Connect(function()  
-                    btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)  
-                end)  
-                btn.MouseButton1Click:Connect(function()  
-                    clickSound:Play()  
-                    data.action()  
-                end)  
-            end  
-        end  
+                    btn.MouseEnter:Connect(function()
+                        btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+                    end)
+                    btn.MouseLeave:Connect(function()
+                        btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+                    end)
+                    btn.MouseButton1Click:Connect(function()
+                        clickSound:Play()
+                        data.action()
+                    end)
+                end
+            end
 
-        page.Visible = false  
-        table.insert(pages, page)  
-    end  
-end  
+            page.Visible = false
+            table.insert(pages, page)
+        end
+    end
 
-local function showPage(pageNum)  
-    for i, page in ipairs(pages) do  
-        page.Visible = (i == pageNum)  
-    end  
+    local function showPage(pageNum)
+        for i, page in ipairs(pages) do
+            page.Visible = (i == pageNum)
+        end
 
-    local buttonCount = 0  
-    for _, child in ipairs(pages[pageNum]:GetChildren()) do  
-        if child:IsA("TextButton") then  
-            buttonCount += 1  
-        end  
-    end  
+        local buttonCount = 0
+        for _, child in ipairs(pages[pageNum]:GetChildren()) do
+            if child:IsA("TextButton") then
+                buttonCount += 1
+            end
+        end
 
-    updateFrameHeight(buttonCount)  
-    currentPage = pageNum  
-end  
+        updateFrameHeight(buttonCount)
+        currentPage = pageNum
+    end
 
-local function createPageNav()  
-    local navFrame = Instance.new("Frame")  
-    navFrame.Size = UDim2.new(1, -24, 0, 30)  
-    navFrame.Position = UDim2.new(0, 12, 0, 160)  
-    navFrame.BackgroundTransparency = 1  
-    navFrame.Name = "Nav"  
-    navFrame.Parent = frame  
+    local function createPageNav()
+        local navFrame = Instance.new("Frame")
+        navFrame.Size = UDim2.new(1, -24, 0, 30)
+        navFrame.Position = UDim2.new(0, 12, 0, 160)
+        navFrame.BackgroundTransparency = 1
+        navFrame.Name = "Nav"
+        navFrame.Parent = frame
 
-    local layout = Instance.new("UIListLayout")  
-    layout.FillDirection = Enum.FillDirection.Horizontal  
-    layout.HorizontalAlignment = Enum.HorizontalAlignment.Center  
-    layout.SortOrder = Enum.SortOrder.LayoutOrder  
-    layout.Padding = UDim.new(0, 6)  
-    layout.Parent = navFrame  
+        local layout = Instance.new("UIListLayout")
+        layout.FillDirection = Enum.FillDirection.Horizontal
+        layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+        layout.SortOrder = Enum.SortOrder.LayoutOrder
+        layout.Padding = UDim.new(0, 6)
+        layout.Parent = navFrame
 
-    for i = 1, #pages do  
-        local btn = Instance.new("TextButton")  
-        btn.Size = UDim2.new(0, 24, 1, 0)  
-        btn.Text = tostring(i)  
-        btn.Font = Enum.Font.GothamBold  
-        btn.TextSize = 14  
-        btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)  
-        btn.TextColor3 = Color3.fromRGB(255, 255, 255)  
-        btn.Parent = navFrame  
+        for i = 1, #pages do
+            local btn = Instance.new("TextButton")
+            btn.Size = UDim2.new(0, 24, 1, 0)
+            btn.Text = tostring(i)
+            btn.Font = Enum.Font.GothamBold
+            btn.TextSize = 14
+            btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+            btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+            btn.Parent = navFrame
 
-        local corner = Instance.new("UICorner")  
-        corner.CornerRadius = UDim.new(0, 6)  
-        corner.Parent = btn  
+            local corner = Instance.new("UICorner")
+            corner.CornerRadius = UDim.new(0, 6)
+            corner.Parent = btn
 
-        btn.MouseButton1Click:Connect(function()  
-            showPage(i)  
-        end)  
-    end  
-end  
+            btn.MouseButton1Click:Connect(function()
+                showPage(i)
+            end)
+        end
+    end
 
-createPages()  
-createPageNav()  
-showPage(1)  
+    createPages()
+    createPageNav()
+    showPage(1)
 
-serverHopButtonGui = gui
-
+    serverHopButtonGui = gui
 end
-
-
 
 workspace.DescendantAdded:Connect(function(obj)
     task.wait(0.1)
