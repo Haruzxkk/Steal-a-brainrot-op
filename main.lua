@@ -221,216 +221,219 @@ local function showNotification(parentGui, text, duration)
 end
 
 local function createGUI()
-    if serverHopButtonGui then return end
+if serverHopButtonGui then return end
 
-    local Players = game:GetService("Players")
-    local LocalPlayer = Players.LocalPlayer
+local Players = game:GetService("Players")  
+local LocalPlayer = Players.LocalPlayer  
 
-    local gui = Instance.new("ScreenGui")
-    gui.Name = "DreamHubGUI"
-    gui.ResetOnSpawn = false
-    gui.IgnoreGuiInset = true
-    gui.Parent = getSafeGuiParent()
-    
-    local toggleBtn = Instance.new("TextButton")
-    toggleBtn.Size = UDim2.new(0, 40, 0, 40)
-    toggleBtn.Position = UDim2.new(0.5, -20, 0, 10)
-    toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    toggleBtn.Text = "🌟"
-    toggleBtn.Font = Enum.Font.GothamBold
-    toggleBtn.TextSize = 20
-    toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    toggleBtn.ZIndex = 10
-    toggleBtn.AutoButtonColor = true
-    toggleBtn.Parent = gui
+local gui = Instance.new("ScreenGui")  
+gui.Name = "DreamHubGUI"  
+gui.ResetOnSpawn = false  
+gui.IgnoreGuiInset = true  
+gui.Parent = getSafeGuiParent()  
 
-    local toggleCorner = Instance.new("UICorner")
-    toggleCorner.CornerRadius = UDim.new(0, 10)
-    toggleCorner.Parent = toggleBtn
+local toggleBtn = Instance.new("TextButton")  
+toggleBtn.Size = UDim2.new(0, 40, 0, 40)  
+toggleBtn.Position = UDim2.new(0.5, -20, 0, 10)  
+toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)  
+toggleBtn.Text = "🌟"  
+toggleBtn.Font = Enum.Font.GothamBold  
+toggleBtn.TextSize = 20  
+toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)  
+toggleBtn.ZIndex = 10  
+toggleBtn.AutoButtonColor = true  
+toggleBtn.Parent = gui  
 
-    local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 260, 0, 100)
-    frame.Position = UDim2.new(0.5, -130, 0.4, 0)
-    frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    frame.BorderSizePixel = 0
-    frame.Active = true
-    frame.Draggable = true
-    frame.Visible = true
-    frame.Parent = gui
+local toggleCorner = Instance.new("UICorner")  
+toggleCorner.CornerRadius = UDim.new(0, 10)  
+toggleCorner.Parent = toggleBtn  
 
-    local frameCorner = Instance.new("UICorner")
-    frameCorner.CornerRadius = UDim.new(0, 15)
-    frameCorner.Parent = frame
+local frame = Instance.new("Frame")  
+frame.Size = UDim2.new(0, 260, 0, 100)  
+frame.Position = UDim2.new(0.5, -130, 0.4, 0)  
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)  
+frame.BorderSizePixel = 0  
+frame.Active = true  
+frame.Draggable = true  
+frame.Visible = true  
+frame.Parent = gui  
 
-    toggleBtn.MouseButton1Click:Connect(function()
-        frame.Visible = not frame.Visible
-    end)
+local frameCorner = Instance.new("UICorner")  
+frameCorner.CornerRadius = UDim.new(0, 15)  
+frameCorner.Parent = frame  
 
-    local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, -24, 0, 30)
-    title.Position = UDim2.new(0, 12, 0, 12)
-    title.BackgroundTransparency = 1
-    title.Text = "🌟 DreamHub"
-    title.Font = Enum.Font.GothamBold
-    title.TextSize = 20
-    title.TextColor3 = Color3.fromRGB(255, 255, 255)
-    title.TextXAlignment = Enum.TextXAlignment.Center
-    title.Parent = frame
+toggleBtn.MouseButton1Click:Connect(function()  
+    frame.Visible = not frame.Visible  
+end)  
 
-    local clickSound = Instance.new("Sound")
-    clickSound.SoundId = "rbxassetid://18705898425"
-    clickSound.Volume = 1
-    clickSound.Parent = LocalPlayer:WaitForChild("PlayerGui")
+local title = Instance.new("TextLabel")  
+title.Size = UDim2.new(1, -24, 0, 30)  
+title.Position = UDim2.new(0, 12, 0, 12)  
+title.BackgroundTransparency = 1  
+title.Text = "🌟 DreamHub"  
+title.Font = Enum.Font.GothamBold  
+title.TextSize = 20  
+title.TextColor3 = Color3.fromRGB(255, 255, 255)  
+title.TextXAlignment = Enum.TextXAlignment.Center  
+title.Parent = frame  
 
-    local pages = {}
-    local currentPage = 1
-    local buttonsPerPage = 3
+local clickSound = Instance.new("Sound")  
+clickSound.SoundId = "rbxassetid://18705898425"  
+clickSound.Volume = 1  
+clickSound.Parent = LocalPlayer:WaitForChild("PlayerGui")  
 
-    local buttonsData = {
-        { label = "ServerHop", action = function() serverHop(true) end },
-        { label = "ESP Jogadores", action = function() enableESP() end },
-        {
-            label = "Instant Steal",
-            action = function()
-              showNotification(gui, "Key Arbix Hub", 7)
-  loadstring(game:HttpGet("https://raw.githubusercontent.com/Youifpg/Steal-a-Brianrot/refs/heads/main/Slowversion.lua"))()
-            end
-        },
-        { label = "Cabeça de Medusa", action = function() buyItem("Medusa's Head") end },
-        { label = "Capa de Invisibilidade", action = function() buyItem("Invisibility Cloak") end },
-        { label = "Sentinela", action = function() buyItem("All Seeing Sentry") end },
-        { label = "Clonador Quântico", action = function() buyItem("Quantum Cloner") end },
-        { label = "Armadilha", action = function() buyItem("Trap") end },
-    }
+local pages = {}  
+local currentPage = 1  
+local buttonsPerPage = 3  
 
-    local function updateFrameHeight(numButtons)
-        local buttonHeight = 36
-        local buttonPadding = 8
-        local topMargin = 12 + 30 + 8
-        local bottomMargin = 30 + 10
+local buttonsData = {  
+    { label = "ServerHop", action = function() serverHop(true) end },  
+    { label = "ESP Jogadores", action = function() enableESP() end },  
+    {  
+        label = "Instant Steal (Key Arbix Hub)",  
+        action = function()  
+          showNotification(gui, "Key Arbix Hub", 7)
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Youifpg/Steal-a-Brianrot/refs/heads/main/Slowversion.lua"))()  
+        end  
+    },  
+    { label = "Cabeça de Medusa", action = function() buyItem("Medusa's Head") end },  
+    { label = "Capa de Invisibilidade", action = function() buyItem("Invisibility Cloak") end },  
+    { label = "Sentinela", action = function() buyItem("All Seeing Sentry") end },  
+    { label = "Clonador Quântico", action = function() buyItem("Quantum Cloner") end },  
+    { label = "Armadilha", action = function() buyItem("Trap") end },  
+}  
 
-        local totalHeight = topMargin + (numButtons * (buttonHeight + buttonPadding)) - buttonPadding + bottomMargin
-        frame.Size = UDim2.new(0, 260, 0, totalHeight)
-    end
+local function updateFrameHeight(numButtons)  
+    local buttonHeight = 36  
+    local buttonPadding = 8  
+    local topMargin = 12 + 30 + 8  
+    local bottomMargin = 30 + 10  
 
-    local function createPages()
-        for _, p in pairs(pages) do
-            if p and p.Destroy then p:Destroy() end
-        end
-        pages = {}
+    local totalHeight = topMargin + (numButtons * (buttonHeight + buttonPadding)) - buttonPadding + bottomMargin  
+    frame.Size = UDim2.new(0, 260, 0, totalHeight)  
+end  
 
-        local totalPages = math.ceil(#buttonsData / buttonsPerPage)
+local function createPages()  
+    for _, p in pairs(pages) do  
+        if p and p.Destroy then p:Destroy() end  
+    end  
+    pages = {}  
 
-        for i = 1, totalPages do
-            local page = Instance.new("Frame")
-            page.Size = UDim2.new(1, -24, 0, 108)
-            page.Position = UDim2.new(0, 12, 0, 50)
-            page.BackgroundTransparency = 1
-            page.Name = "Page" .. i
-            page.Parent = frame
+    local totalPages = math.ceil(#buttonsData / buttonsPerPage)  
 
-            local layout = Instance.new("UIListLayout")
-            layout.Padding = UDim.new(0, 8)
-            layout.FillDirection = Enum.FillDirection.Vertical
-            layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-            layout.SortOrder = Enum.SortOrder.LayoutOrder
-            layout.VerticalAlignment = Enum.VerticalAlignment.Top
-            layout.Parent = page
+    for i = 1, totalPages do  
+        local page = Instance.new("Frame")  
+        page.Size = UDim2.new(1, -24, 0, 108)  
+        page.Position = UDim2.new(0, 12, 0, 50)  
+        page.BackgroundTransparency = 1  
+        page.Name = "Page" .. i  
+        page.Parent = frame  
 
-            for j = 1, buttonsPerPage do
-                local index = (i - 1) * buttonsPerPage + j
-                local data = buttonsData[index]
-                if data then
-                    local btn = Instance.new("TextButton")
-                    btn.Size = UDim2.new(1, 0, 0, 36)
-                    btn.Text = data.label
-                    btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-                    btn.BorderSizePixel = 0
-                    btn.TextColor3 = Color3.fromRGB(235, 235, 235)
-                    btn.Font = Enum.Font.GothamMedium
-                    btn.TextSize = 15
-                    btn.AutoButtonColor = true
-                    btn.Parent = page
+        local layout = Instance.new("UIListLayout")  
+        layout.Padding = UDim.new(0, 8)  
+        layout.FillDirection = Enum.FillDirection.Vertical  
+        layout.HorizontalAlignment = Enum.HorizontalAlignment.Center  
+        layout.SortOrder = Enum.SortOrder.LayoutOrder  
+        layout.VerticalAlignment = Enum.VerticalAlignment.Top  
+        layout.Parent = page  
 
-                    local btnCorner = Instance.new("UICorner")
-                    btnCorner.CornerRadius = UDim.new(0, 10)
-                    btnCorner.Parent = btn
+        for j = 1, buttonsPerPage do  
+            local index = (i - 1) * buttonsPerPage + j  
+            local data = buttonsData[index]  
+            if data then  
+                local btn = Instance.new("TextButton")  
+                btn.Size = UDim2.new(1, 0, 0, 36)  
+                btn.Text = data.label  
+                btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)  
+                btn.BorderSizePixel = 0  
+                btn.TextColor3 = Color3.fromRGB(235, 235, 235)  
+                btn.Font = Enum.Font.GothamMedium  
+                btn.TextSize = 15  
+                btn.AutoButtonColor = true  
+                btn.Parent = page  
 
-                    btn.MouseEnter:Connect(function()
-                        btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-                    end)
-                    btn.MouseLeave:Connect(function()
-                        btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-                    end)
-                    btn.MouseButton1Click:Connect(function()
-                        clickSound:Play()
-                        data.action()
-                    end)
-                end
-            end
+                local btnCorner = Instance.new("UICorner")  
+                btnCorner.CornerRadius = UDim.new(0, 10)  
+                btnCorner.Parent = btn  
 
-            page.Visible = false
-            table.insert(pages, page)
-        end
-    end
+                btn.MouseEnter:Connect(function()  
+                    btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)  
+                end)  
+                btn.MouseLeave:Connect(function()  
+                    btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)  
+                end)  
+                btn.MouseButton1Click:Connect(function()  
+                    clickSound:Play()  
+                    data.action()  
+                end)  
+            end  
+        end  
 
-    local function showPage(pageNum)
-        for i, page in ipairs(pages) do
-            page.Visible = (i == pageNum)
-        end
+        page.Visible = false  
+        table.insert(pages, page)  
+    end  
+end  
 
-        local buttonCount = 0
-        for _, child in ipairs(pages[pageNum]:GetChildren()) do
-            if child:IsA("TextButton") then
-                buttonCount += 1
-            end
-        end
+local function showPage(pageNum)  
+    for i, page in ipairs(pages) do  
+        page.Visible = (i == pageNum)  
+    end  
 
-        updateFrameHeight(buttonCount)
-        currentPage = pageNum
-    end
+    local buttonCount = 0  
+    for _, child in ipairs(pages[pageNum]:GetChildren()) do  
+        if child:IsA("TextButton") then  
+            buttonCount += 1  
+        end  
+    end  
 
-    local function createPageNav()
-        local navFrame = Instance.new("Frame")
-        navFrame.Size = UDim2.new(1, -24, 0, 30)
-        navFrame.Position = UDim2.new(0, 12, 0, 160)
-        navFrame.BackgroundTransparency = 1
-        navFrame.Name = "Nav"
-        navFrame.Parent = frame
+    updateFrameHeight(buttonCount)  
+    currentPage = pageNum  
+end  
 
-        local layout = Instance.new("UIListLayout")
-        layout.FillDirection = Enum.FillDirection.Horizontal
-        layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-        layout.SortOrder = Enum.SortOrder.LayoutOrder
-        layout.Padding = UDim.new(0, 6)
-        layout.Parent = navFrame
+local function createPageNav()  
+    local navFrame = Instance.new("Frame")  
+    navFrame.Size = UDim2.new(1, -24, 0, 30)  
+    navFrame.Position = UDim2.new(0, 12, 0, 160)  
+    navFrame.BackgroundTransparency = 1  
+    navFrame.Name = "Nav"  
+    navFrame.Parent = frame  
 
-        for i = 1, #pages do
-            local btn = Instance.new("TextButton")
-            btn.Size = UDim2.new(0, 24, 1, 0)
-            btn.Text = tostring(i)
-            btn.Font = Enum.Font.GothamBold
-            btn.TextSize = 14
-            btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-            btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-            btn.Parent = navFrame
+    local layout = Instance.new("UIListLayout")  
+    layout.FillDirection = Enum.FillDirection.Horizontal  
+    layout.HorizontalAlignment = Enum.HorizontalAlignment.Center  
+    layout.SortOrder = Enum.SortOrder.LayoutOrder  
+    layout.Padding = UDim.new(0, 6)  
+    layout.Parent = navFrame  
 
-            local corner = Instance.new("UICorner")
-            corner.CornerRadius = UDim.new(0, 6)
-            corner.Parent = btn
+    for i = 1, #pages do  
+        local btn = Instance.new("TextButton")  
+        btn.Size = UDim2.new(0, 24, 1, 0)  
+        btn.Text = tostring(i)  
+        btn.Font = Enum.Font.GothamBold  
+        btn.TextSize = 14  
+        btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)  
+        btn.TextColor3 = Color3.fromRGB(255, 255, 255)  
+        btn.Parent = navFrame  
 
-            btn.MouseButton1Click:Connect(function()
-                showPage(i)
-            end)
-        end
-    end
+        local corner = Instance.new("UICorner")  
+        corner.CornerRadius = UDim.new(0, 6)  
+        corner.Parent = btn  
 
-    createPages()
-    createPageNav()
-    showPage(1)
+        btn.MouseButton1Click:Connect(function()  
+            showPage(i)  
+        end)  
+    end  
+end  
 
-    serverHopButtonGui = gui
+createPages()  
+createPageNav()  
+showPage(1)  
+
+serverHopButtonGui = gui
+
 end
+
+
 
 workspace.DescendantAdded:Connect(function(obj)
     task.wait(0.1)
