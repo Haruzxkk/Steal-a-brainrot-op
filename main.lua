@@ -228,7 +228,7 @@ local function createGUI()
     toggleCorner.Parent = toggleBtn
 
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 260, 0, 240)
+    frame.Size = UDim2.new(0, 260, 0, 100)
     frame.Position = UDim2.new(0.5, -130, 0.4, 0)
     frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     frame.BorderSizePixel = 0
@@ -266,20 +266,30 @@ local function createGUI()
     local buttonsPerPage = 3
 
     local buttonsData = {
-    { label = "ServerHop", action = function() serverHop(true) end },
-    { label = "ESP Jogadores", action = function() enableESP() end },
-    {
-        label = "Instant Steal",
-        action = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/Youifpg/Steal-a-Brianrot/refs/heads/main/Slowversion.lua"))()
-        end
-    },
-    { label = "Cabeça de Medusa", action = function() buyItem("Medusa's Head") end },
-    { label = "Capa de Invisibilidade", action = function() buyItem("Invisibility Cloak") end },
-    { label = "Sentinela", action = function() buyItem("All Seeing Sentry") end },
-    { label = "Clonador Quântico", action = function() buyItem("Quantum Cloner") end },
-    { label = "Armadilha", action = function() buyItem("Trap") end },
-}
+        { label = "ServerHop", action = function() serverHop(true) end },
+        { label = "ESP Jogadores", action = function() enableESP() end },
+        {
+            label = "Instant Steal (Key Arbix Hub)",
+            action = function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/Youifpg/Steal-a-Brianrot/refs/heads/main/Slowversion.lua"))()
+            end
+        },
+        { label = "Cabeça de Medusa", action = function() buyItem("Medusa's Head") end },
+        { label = "Capa de Invisibilidade", action = function() buyItem("Invisibility Cloak") end },
+        { label = "Sentinela", action = function() buyItem("All Seeing Sentry") end },
+        { label = "Clonador Quântico", action = function() buyItem("Quantum Cloner") end },
+        { label = "Armadilha", action = function() buyItem("Trap") end },
+    }
+
+    local function updateFrameHeight(numButtons)
+        local buttonHeight = 36
+        local buttonPadding = 8
+        local topMargin = 12 + 30 + 8
+        local bottomMargin = 30 + 10
+
+        local totalHeight = topMargin + (numButtons * (buttonHeight + buttonPadding)) - buttonPadding + bottomMargin
+        frame.Size = UDim2.new(0, 260, 0, totalHeight)
+    end
 
     local function createPages()
         for _, p in pairs(pages) do
@@ -291,7 +301,7 @@ local function createGUI()
 
         for i = 1, totalPages do
             local page = Instance.new("Frame")
-            page.Size = UDim2.new(1, -24, 0, 120)
+            page.Size = UDim2.new(1, -24, 0, 108)
             page.Position = UDim2.new(0, 12, 0, 50)
             page.BackgroundTransparency = 1
             page.Name = "Page" .. i
@@ -346,13 +356,22 @@ local function createGUI()
         for i, page in ipairs(pages) do
             page.Visible = (i == pageNum)
         end
+
+        local buttonCount = 0
+        for _, child in ipairs(pages[pageNum]:GetChildren()) do
+            if child:IsA("TextButton") then
+                buttonCount += 1
+            end
+        end
+
+        updateFrameHeight(buttonCount)
         currentPage = pageNum
     end
 
     local function createPageNav()
         local navFrame = Instance.new("Frame")
         navFrame.Size = UDim2.new(1, -24, 0, 30)
-        navFrame.Position = UDim2.new(0, 12, 0, 180)
+        navFrame.Position = UDim2.new(0, 12, 0, 160)
         navFrame.BackgroundTransparency = 1
         navFrame.Name = "Nav"
         navFrame.Parent = frame
