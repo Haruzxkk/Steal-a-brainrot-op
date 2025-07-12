@@ -228,7 +228,7 @@ local function createGUI()
     toggleCorner.Parent = toggleBtn
 
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 260, 0, 300)
+    frame.Size = UDim2.new(0, 260, 0, 290)
     frame.Position = UDim2.new(0.5, -130, 0.4, 0)
     frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     frame.BorderSizePixel = 0
@@ -264,14 +264,22 @@ local function createGUI()
     local pages = {}
     local currentPage = 1
     local buttonsPerPage = 3
+
+    -- Lista de botões
     local buttonsData = {
         { label = "ServerHop", action = function() serverHop(true) end },
         { label = "ESP Jogadores", action = function() enableESP() end },
+        {
+            label = "Instant Steal (Key Arbix Hub)",
+            action = function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/Youifpg/Steal-a-Brianrot/refs/heads/main/Slowversion.lua"))()
+            end
+        },
         { label = "Cabeça de Medusa", action = function() buyItem("Medusa's Head") end },
-        { label = "Capa de invisibilidade", action = function() buyItem("Invisibility Cloak") end },
+        { label = "Capa de Invisibilidade", action = function() buyItem("Invisibility Cloak") end },
         { label = "Sentinela", action = function() buyItem("All Seeing Sentry") end },
-        { label = "Clonador Quantico", action = function() buyItem("Quantum Cloner") end },
-        { label = "Armadilha", action = function() buyItem("Trap") end },
+        { label = "Clonador Quântico", action = function() buyItem("Quantum Cloner") end },
+        { label = "Armadilha", action = function() buyItem("Trap") end }
     }
 
     local function createPages()
@@ -284,10 +292,9 @@ local function createGUI()
 
         for i = 1, totalPages do
             local page = Instance.new("Frame")
-            page.Size = UDim2.new(1, -24, 0, 180)
+            page.Size = UDim2.new(1, -24, 0, 140)
             page.Position = UDim2.new(0, 12, 0, 50)
             page.BackgroundTransparency = 1
-            page.Visible = false
             page.Name = "Page" .. i
             page.Parent = frame
 
@@ -296,6 +303,7 @@ local function createGUI()
             layout.FillDirection = Enum.FillDirection.Vertical
             layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
             layout.SortOrder = Enum.SortOrder.LayoutOrder
+            layout.VerticalAlignment = Enum.VerticalAlignment.Top
             layout.Parent = page
 
             for j = 1, buttonsPerPage do
@@ -330,6 +338,7 @@ local function createGUI()
                 end
             end
 
+            page.Visible = false
             table.insert(pages, page)
         end
     end
@@ -376,7 +385,6 @@ local function createGUI()
         end
     end
 
-    -- Chamada final
     createPages()
     createPageNav()
     showPage(1)
