@@ -228,7 +228,7 @@ local function createGUI()
     toggleCorner.Parent = toggleBtn
 
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 260, 0, 290)
+    frame.Size = UDim2.new(0, 260, 0, 240)
     frame.Position = UDim2.new(0.5, -130, 0.4, 0)
     frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     frame.BorderSizePixel = 0
@@ -291,7 +291,7 @@ local function createGUI()
 
         for i = 1, totalPages do
             local page = Instance.new("Frame")
-            page.Size = UDim2.new(1, -24, 0, 140)
+            page.Size = UDim2.new(1, -24, 0, 120)
             page.Position = UDim2.new(0, 12, 0, 50)
             page.BackgroundTransparency = 1
             page.Name = "Page" .. i
@@ -352,7 +352,7 @@ local function createGUI()
     local function createPageNav()
         local navFrame = Instance.new("Frame")
         navFrame.Size = UDim2.new(1, -24, 0, 30)
-        navFrame.Position = UDim2.new(0, 12, 1, -40)
+        navFrame.Position = UDim2.new(0, 12, 0, 180)
         navFrame.BackgroundTransparency = 1
         navFrame.Name = "Nav"
         navFrame.Parent = frame
