@@ -279,7 +279,7 @@ local function createGUI()
         { label = "Capa de Invisibilidade", action = function() buyItem("Invisibility Cloak") end },
         { label = "Sentinela", action = function() buyItem("All Seeing Sentry") end },
         { label = "Clonador Quântico", action = function() buyItem("Quantum Cloner") end },
-        { label = "Armadilha", action = function() buyItem("Trap") end }
+        { label = "Armadilha 1x", action = function() buyItem("Trap") end }
     }
 
     local function createPages()
