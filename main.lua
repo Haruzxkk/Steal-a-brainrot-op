@@ -265,22 +265,21 @@ local function createGUI()
     local currentPage = 1
     local buttonsPerPage = 3
 
-    -- Lista de botões
     local buttonsData = {
-        { label = "ServerHop", action = function() serverHop(true) end },
-        { label = "ESP Jogadores", action = function() enableESP() end },
-        {
-            label = "Instant Steal (Key Arbix Hub)",
-            action = function()
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/Youifpg/Steal-a-Brianrot/refs/heads/main/Slowversion.lua"))()
-            end
-        },
-        { label = "Cabeça de Medusa", action = function() buyItem("Medusa's Head") end },
-        { label = "Capa de Invisibilidade", action = function() buyItem("Invisibility Cloak") end },
-        { label = "Sentinela", action = function() buyItem("All Seeing Sentry") end },
-        { label = "Clonador Quântico", action = function() buyItem("Quantum Cloner") end },
-        { label = "Armadilha 1x", action = function() buyItem("Trap") end }
-    }
+    { label = "ServerHop", action = function() serverHop(true) end },
+    { label = "ESP Jogadores", action = function() enableESP() end },
+    {
+        label = "Instant Steal",
+        action = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Youifpg/Steal-a-Brianrot/refs/heads/main/Slowversion.lua"))()
+        end
+    },
+    { label = "Cabeça de Medusa", action = function() buyItem("Medusa's Head") end },
+    { label = "Capa de Invisibilidade", action = function() buyItem("Invisibility Cloak") end },
+    { label = "Sentinela", action = function() buyItem("All Seeing Sentry") end },
+    { label = "Clonador Quântico", action = function() buyItem("Quantum Cloner") end },
+    { label = "Armadilha", action = function() buyItem("Trap") end },
+}
 
     local function createPages()
         for _, p in pairs(pages) do
