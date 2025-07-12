@@ -275,7 +275,9 @@ local function createGUI()
     }
 
     local function createPages()
-        for _, p in pairs(pages) do p:Destroy() end
+        for _, p in pairs(pages) do
+            if p and p.Destroy then p:Destroy() end
+        end
         pages = {}
 
         local totalPages = math.ceil(#buttonsData / buttonsPerPage)
@@ -286,6 +288,7 @@ local function createGUI()
             page.Position = UDim2.new(0, 12, 0, 50)
             page.BackgroundTransparency = 1
             page.Visible = false
+            page.Name = "Page" .. i
             page.Parent = frame
 
             local layout = Instance.new("UIListLayout")
@@ -343,6 +346,7 @@ local function createGUI()
         navFrame.Size = UDim2.new(1, -24, 0, 30)
         navFrame.Position = UDim2.new(0, 12, 1, -40)
         navFrame.BackgroundTransparency = 1
+        navFrame.Name = "Nav"
         navFrame.Parent = frame
 
         local layout = Instance.new("UIListLayout")
@@ -372,9 +376,10 @@ local function createGUI()
         end
     end
 
+    -- Chamada final
     createPages()
-    showPage(1)
     createPageNav()
+    showPage(1)
 
     serverHopButtonGui = gui
 end
