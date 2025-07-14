@@ -16,7 +16,7 @@ local highlights = {}
 local texts = {}
 local serverHopButtonGui = nil
 local teleportFails = 0
-local maxTeleportRetries = 11
+local maxTeleportRetries = 10
 
 local function getSafeGuiParent()
     return (gethui and gethui()) or (syn and syn.protect_gui and syn.protect_gui(CoreGui)) or CoreGui
