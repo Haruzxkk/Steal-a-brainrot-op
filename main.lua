@@ -16,7 +16,7 @@ local highlights = {}
 local texts = {}
 local serverHopButtonGui = nil
 local teleportFails = 0
-local maxTeleportRetries = 3
+local maxTeleportRetries = 10
 
 local function getSafeGuiParent()
     return (gethui and gethui()) or (syn and syn.protect_gui and syn.protect_gui(CoreGui)) or CoreGui
@@ -293,7 +293,7 @@ local buttonsData = {
         label = "Instant Steal",  
         action = function()  
           showNotification(gui, "Key Arbix Hub", 7)
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/Youifpg/Steal-a-Brianrot/refs/heads/main/Slowversion.lua"))()  
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Youifpg/Steal-a-Brianrot/refs/heads/main/ArbixHubBEST.lua"))() 
         end  
     },  
     { label = "Cabeça de Medusa", action = function() buyItem("Medusa's Head") end },  
