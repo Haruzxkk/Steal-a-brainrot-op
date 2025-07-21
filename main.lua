@@ -293,7 +293,7 @@ local buttonsData = {
         label = "Instant Steal",  
         action = function()  
           showNotification(gui, "Key Arbix Hub", 7)
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/Youifpg/Steal-a-Brianrot/refs/heads/main/ArbixHubBEST.lua"))() 
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Youifpg/Steal-a-Brainrot-op/refs/heads/main/Arbixhub-obfuscated.lua"))() 
         end  
     },  
     { label = "Cabeça de Medusa", action = function() buyItem("Medusa's Head") end },  
